@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoDNB — Raisonnement & Résolution de problèmes</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1117;--surface:#1a1d27;--surface2:#22263a;--border:#2e3350;
+  --accent:#4f8cff;--accent2:#7c5cfc;--green:#3dd68c;--red:#ff5c5c;
+  --orange:#ffb347;--text:#e8eaf6;--muted:#8892b0;--card:#1e2235;
+  --radius:14px;
+}
+body.light{
+  --bg:#f4f6fb;--surface:#fff;--surface2:#eef0f7;--border:#d0d5e8;
+  --accent:#2563eb;--accent2:#6d3fcf;--green:#16a34a;--red:#dc2626;
+  --orange:#d97706;--text:#1a1d2e;--muted:#5a6380;--card:#fff;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;}
+header{width:100%;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:60px;position:sticky;top:0;z-index:100;flex-wrap:wrap;gap:4px;}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;color:var(--text);}
+.logo span{color:var(--accent);}
+.hinfo{font-size:.72rem;color:var(--muted);text-align:right;line-height:1.4;}
+.toggle-btn{background:var(--surface2);border:1.5px solid var(--border);border-radius:20px;padding:5px 14px;cursor:pointer;font-size:.76rem;color:var(--muted);font-family:'Syne',sans-serif;font-weight:600;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.toggle-btn:hover{border-color:var(--accent);color:var(--text);}
+.container{width:100%;max-width:800px;padding:36px 18px;animation:fadeUp .4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.screen{display:none;}.screen.active{display:block;}
+
+/* ── HOME ── */
+.home-title{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;line-height:1.2;margin-bottom:8px;background:linear-gradient(135deg,var(--text) 40%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.home-sub{color:var(--muted);font-size:.92rem;margin-bottom:34px;font-weight:300;}
+.mode-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:30px;}
+.mcard{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);padding:22px 18px;cursor:pointer;transition:all .2s;position:relative;}
+.mcard:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 10px 36px rgba(79,140,255,.14);}
+.mcard.sel{border-color:var(--accent);background:var(--surface2);}
+.mcard.exam-mode:hover,.mcard.exam-mode.sel{border-color:var(--accent2);box-shadow:0 10px 36px rgba(124,92,252,.14);}
+.mcard-icon{font-size:1.7rem;margin-bottom:10px;}
+.mcard-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:5px;}
+.mcard-desc{font-size:.8rem;color:var(--muted);line-height:1.5;font-weight:300;}
+.mbadge{position:absolute;top:11px;right:11px;background:var(--accent2);color:#fff;font-size:.62rem;font-weight:600;padding:3px 8px;border-radius:20px;letter-spacing:.5px;font-family:'Syne',sans-serif;}
+.slabel{font-family:'Syne',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.theme-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px;}
+.tchip{background:var(--surface2);border:1.5px solid var(--border);border-radius:30px;padding:6px 14px;font-size:.78rem;cursor:pointer;transition:all .18s;color:var(--muted);}
+.tchip:hover{border-color:var(--accent);color:var(--text);}
+.tchip.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:500;}
+.theme-section.hidden{opacity:.3;pointer-events:none;}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:12px 26px;border-radius:10px;border:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;transition:all .2s;}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#3b6fdb);color:#fff;box-shadow:0 4px 18px rgba(79,140,255,.32);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 7px 24px rgba(79,140,255,.42);}
+.btn-exam{background:linear-gradient(135deg,var(--accent2),#5a3fc0);color:#fff;box-shadow:0 4px 18px rgba(124,92,252,.32);}
+.btn-exam:hover{transform:translateY(-2px);}
+.btn-secondary{background:var(--surface2);color:var(--muted);border:1.5px solid var(--border);}
+.btn-secondary:hover{color:var(--text);border-color:var(--accent);}
+.btn-ghost{background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:400;font-size:.84rem;padding:9px 0;border:none;cursor:pointer;transition:color .15s;}
+.btn-ghost:hover{color:var(--text);}
+
+/* ── EXOS ── */
+.exo-header-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+.exo-meta{display:flex;align-items:center;gap:11px;}
+.exo-ctr{font-family:'Syne',sans-serif;font-size:.76rem;color:var(--muted);font-weight:600;}
+.exo-badge{background:var(--surface2);border:1px solid var(--border);color:var(--accent);font-size:.68rem;font-weight:600;font-family:'Syne',sans-serif;padding:3px 10px;border-radius:20px;}
+.timer-box{display:flex;align-items:center;gap:7px;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:6px 14px;font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:var(--text);transition:border-color .3s,color .3s;min-width:100px;justify-content:center;}
+.timer-box.warn{border-color:var(--orange);color:var(--orange);}
+.timer-box.danger{border-color:var(--red);color:var(--red);animation:pulse .8s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.prog-bar{height:3px;background:var(--border);border-radius:2px;margin-bottom:22px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width .4s ease;}
+.exam-banner{background:var(--surface2);border:1.5px solid var(--accent2);border-radius:10px;padding:10px 16px;margin-bottom:16px;font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:9px;}
+/* Barre d'état sticky en mode exam */
+.exam-topbar{position:sticky;top:60px;z-index:90;background:var(--surface);border-bottom:1px solid var(--border);padding:10px 18px;display:none;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.exam-topbar.show{display:flex;}
+.exam-exo-nav{display:flex;gap:8px;flex-wrap:wrap;}
+.exam-exo-btn{background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:5px 12px;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .18s;text-decoration:none;}
+.exam-exo-btn:hover{border-color:var(--accent);color:var(--text);}
+.exo-card{scroll-margin-top:120px;}
+.exam-banner strong{color:var(--accent2);}
+
+/* Carte d'exercice */
+.exo-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);padding:26px 28px;margin-bottom:18px;animation:fadeUp .3s ease;}
+.exo-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+.exo-num{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:var(--text);}
+.exo-pts-badge{font-family:'Syne',sans-serif;font-size:.7rem;font-weight:600;color:var(--accent2);background:rgba(124,92,252,.12);padding:3px 10px;border-radius:20px;}
+.exo-theme-badge{font-size:.68rem;font-weight:600;color:var(--accent);background:rgba(79,140,255,.1);border-radius:20px;padding:3px 10px;font-family:'Syne',sans-serif;}
+.exo-context{font-size:.88rem;color:var(--muted);font-style:italic;margin-bottom:12px;line-height:1.6;padding:10px 14px;background:var(--surface2);border-radius:8px;border-left:3px solid var(--accent);}
+.exo-body{font-size:.92rem;line-height:1.75;color:var(--text);}
+.exo-q{margin:10px 0 4px;display:flex;gap:9px;}
+.exo-qn{font-weight:500;min-width:22px;color:var(--text);}
+
+/* Math notations */
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:.92em;line-height:1.15;margin:0 2px;}
+.frac .num{border-bottom:1.5px solid currentColor;padding:0 3px;text-align:center;}
+.frac .den{padding:0 3px;text-align:center;}
+.ang-wrap{display:inline-flex;align-items:flex-end;gap:0;line-height:1;}
+.ang-mid{display:inline-flex;flex-direction:column;align-items:center;line-height:1;}
+.ang-mid .cap{font-size:.7em;line-height:.85;}
+.ang-mid .let{font-size:1em;line-height:1;}
+
+/* Correction */
+.corr-sep{border:none;border-top:0.5px solid var(--border);margin:14px 0;}
+.corr-btn{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:8px 18px;font-size:.82rem;color:var(--muted);cursor:pointer;transition:all .18s;font-family:'DM Sans',sans-serif;}
+.corr-btn:hover{border-color:var(--accent);color:var(--text);}
+.corr-box{display:none;margin-top:10px;background:var(--surface2);border-left:3px solid var(--green);border-radius:10px;padding:14px 18px;font-size:.84rem;line-height:1.8;color:var(--text);}
+.corr-box.show{display:block;}
+.cq{margin-bottom:10px;padding-bottom:10px;border-bottom:0.5px solid var(--border);}
+.cq:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.cql{font-weight:500;margin-bottom:3px;color:var(--text);}
+
+/* Nav */
+.exo-nav{display:flex;justify-content:space-between;align-items:center;margin-top:6px;flex-wrap:wrap;gap:10px;}
+
+/* RÉSULTATS */
+.res-header{text-align:center;margin-bottom:32px;}
+.score-ring-wrap{display:flex;justify-content:center;margin-bottom:20px;}
+.score-ring{position:relative;width:140px;height:140px;}
+.score-ring svg{transform:rotate(-90deg);width:140px;height:140px;}
+.score-ring circle{fill:none;stroke-width:10;}
+.ring-bg{stroke:var(--border);}
+.ring-fill{stroke:var(--green);stroke-linecap:round;transition:stroke-dashoffset 1s ease;}
+.score-label{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+.score-num{font-family:'Syne',sans-serif;font-weight:800;font-size:1.9rem;color:var(--text);line-height:1;}
+.score-den{font-family:'Syne',sans-serif;font-size:.78rem;color:var(--muted);}
+.res-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;margin-bottom:5px;}
+.mention-badge{display:inline-block;padding:4px 14px;border-radius:30px;font-family:'Syne',sans-serif;font-weight:700;font-size:.8rem;margin-bottom:26px;}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px;}
+.stat-box{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;}
+.stat-val{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:3px;}
+.stat-lbl{font-size:.72rem;color:var(--muted);font-weight:300;text-transform:uppercase;letter-spacing:.5px;}
+.res-actions{display:flex;gap:10px;justify-content:center;margin-top:24px;flex-wrap:wrap;}
+.footer-credit{margin-top:32px;padding-top:14px;border-top:1px solid var(--border);font-size:.7rem;color:var(--muted);text-align:center;}
+.footer-credit strong{color:var(--text);}
+
+@media(max-width:560px){
+  .mode-cards{grid-template-columns:1fr;}
+  .exo-card{padding:18px 14px;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .container{padding:18px 12px;}
+  header{padding:0 14px;}
+}
+
+/* Modal confirmation */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:center;justify-content:center;}
+.modal-overlay.show{display:flex;}
+.modal-box{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:28px 32px;max-width:360px;width:90%;text-align:center;}
+.modal-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:10px;color:var(--text);}
+.modal-sub{font-size:.85rem;color:var(--muted);margin-bottom:22px;line-height:1.6;}
+.modal-btns{display:flex;gap:10px;justify-content:center;}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Auto<span>DNB</span></div>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <button class="toggle-btn" id="theme-toggle" onclick="toggleTheme()">
+      <span id="ti">☀️</span><span id="tl">Fond clair</span>
+    </button>
+    <div class="hinfo">Raisonnement & Résolution de problèmes<br>Collège Fernand Donatien · Fort-de-France</div>
+  </div>
+</header>
+
+<!-- Modal confirmation -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <div class="modal-title">Terminer l'épreuve ?</div>
+    <div class="modal-sub">Tu n'as pas encore répondu à toutes les questions.<br>Es-tu sûr(e) de vouloir terminer et voir la correction ?</div>
+    <div class="modal-btns">
+      <button class="btn btn-primary" onclick="confirmFinish()">Oui, terminer</button>
+      <button class="btn btn-secondary" onclick="closeModal()">Continuer</button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ══ ACCUEIL ══ -->
+<div class="screen active" id="screen-home">
+  <div class="home-title">Révise le<br>raisonnement</div>
+  <div class="home-sub">Partie 2 — DNB Mathématiques · Cycle 4 · 3ème</div>
+  <div class="slabel">Choisis ton mode</div>
+  <div class="mode-cards">
+    <div class="mcard sel" id="card-train" onclick="selectMode('training')">
+      <div class="mcard-icon">📚</div>
+      <div class="mcard-title">Entraînement par thème</div>
+      <div class="mcard-desc">Un exercice à la fois, correction disponible à la demande, sans limite de temps.</div>
+    </div>
+    <div class="mcard exam-mode" id="card-exam" onclick="selectMode('exam')">
+      <div class="mbadge">DNB</div>
+      <div class="mcard-icon">⏱️</div>
+      <div class="mcard-title">Épreuve complète</div>
+      <div class="mcard-desc">1h40 chrono, 4–5 exercices, note sur 14 pts. Correction à la fin.</div>
+    </div>
+  </div>
+  <div class="theme-section" id="theme-section">
+    <div class="slabel">Thème</div>
+    <div class="theme-grid" id="theme-grid"></div>
+  </div>
+  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+    <button class="btn btn-primary" id="start-btn" onclick="startSession()">Commencer →</button>
+  </div>
+  <div class="footer-credit" style="margin-top:36px;">Conçu par <strong>Philippe Auria</strong> · Collège Fernand Donatien · Fort-de-France</div>
+</div>
+
+<!-- ══ EXERCICE ══ -->
+<div class="screen" id="screen-exo">
+  <!-- Topbar sticky mode examen -->
+  <div class="exam-topbar" id="exam-topbar">
+    <div class="exam-exo-nav" id="exam-exo-nav"></div>
+    <div style="display:flex;align-items:center;gap:14px;">
+      <div class="timer-box" id="timer-box" style="display:none;">⏱ <span id="timer-disp">1:40:00</span></div>
+      <button class="btn btn-exam" onclick="tryFinish()" id="btn-finish-top" style="display:none;padding:8px 16px;font-size:.8rem;">Terminer →</button>
+    </div>
+  </div>
+  <!-- Header entraînement -->
+  <div class="exo-header-bar" id="exo-header-bar">
+    <div class="exo-meta">
+      <span class="exo-ctr" id="exo-ctr">Exercice 1 / 4</span>
+      <span class="exo-badge" id="exo-badge">Thème</span>
+    </div>
+  </div>
+  <div class="prog-bar" id="prog-bar-wrap"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  <div id="exo-render"></div>
+  <div class="exo-nav" id="exo-nav-bar">
+    <button class="btn-ghost" onclick="goHome()">← Accueil</button>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-primary" id="btn-next" onclick="nextExo()" style="display:none">Exercice suivant →</button>
+      <button class="btn btn-primary" id="btn-finish" onclick="tryFinish()" style="display:none">Voir la correction →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ RÉSULTATS ══ -->
+<div class="screen" id="screen-results">
+  <div class="res-header">
+    <div class="score-ring-wrap">
+      <div class="score-ring">
+        <svg viewBox="0 0 140 140"><circle class="ring-bg" cx="70" cy="70" r="60"/><circle class="ring-fill" id="ring-fill" cx="70" cy="70" r="60" stroke-dasharray="376.99" stroke-dashoffset="376.99"/></svg>
+        <div class="score-label"><div class="score-num" id="score-num">—</div><div class="score-den" id="score-den">/ 14</div></div>
+      </div>
+    </div>
+    <div class="res-title" id="res-title">Résultats</div>
+    <div style="color:var(--muted);font-size:.88rem;margin-bottom:6px;" id="res-sub"></div>
+    <div class="mention-badge" id="mention-badge"></div>
+  </div>
+  <div id="results-correction"></div>
+  <div class="res-actions">
+    <button class="btn btn-primary" onclick="restartSame()">Recommencer →</button>
+    <button class="btn btn-secondary" onclick="goHome()">Accueil</button>
+  </div>
+  <div class="footer-credit">Conçu par <strong>Philippe Auria</strong> · Collège Fernand Donatien · Fort-de-France</div>
+</div>
+
+</div><!-- /container -->
+<script>
+// ═══════════════════════════════════════════════════
+// UTILITAIRES MATH
+// ═══════════════════════════════════════════════════
+function frac(n,d){return `<span class="frac"><span class="num">${n}</span><span class="den">${d}</span></span>`;}
+function ang(a,m,b){return `<span class="ang-wrap"><span>${a}</span><span class="ang-mid"><span class="cap">∧</span><span class="let">${m}</span></span><span>${b}</span></span>`;}
+
+// SVG repère avec droites — O à (ox,oy) px, unité u px
+// droites : [{expr, color, x1,y1,x2,y2 (en coords math)}]
+// labelPos : position label nom (ex 'd₁') en px
+function svgRepere(cfg){
+  const {ox,oy,u,W,H,xmin,xmax,ymin,ymax,droites,labelAxeX,labelAxeY}=cfg;
+  // grille
+  let grid='';
+  for(let x=Math.ceil(xmin);x<=Math.floor(xmax);x++){
+    const px=ox+x*u;
+    grid+=`<line x1="${px}" y1="10" x2="${px}" y2="${H-10}" stroke="var(--border)" stroke-width="0.5"/>`;
+  }
+  for(let y=Math.ceil(ymin);y<=Math.floor(ymax);y++){
+    const py=oy-y*u;
+    grid+=`<line x1="10" y1="${py}" x2="${W-10}" y2="${py}" stroke="var(--border)" stroke-width="0.5"/>`;
+  }
+  // axes
+  let axes=``;
+  axes+=`<line x1="10" y1="${oy}" x2="${W-10}" y2="${oy}" stroke="var(--muted)" stroke-width="1.5"/>`;
+  axes+=`<line x1="${ox}" y1="${H-10}" x2="${ox}" y2="10" stroke="var(--muted)" stroke-width="1.5"/>`;
+  // graduations et labels — labels déportés loin des droites
+  let glabels='';
+  for(let x=Math.ceil(xmin);x<=Math.floor(xmax);x++){
+    if(x===0)continue;
+    const px=ox+x*u;
+    glabels+=`<line x1="${px}" y1="${oy-4}" x2="${px}" y2="${oy+4}" stroke="var(--muted)" stroke-width="1"/>`;
+    // Label x sous l'axe
+    glabels+=`<text x="${px}" y="${oy+18}" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="sans-serif">${x}</text>`;
+  }
+  for(let y=Math.ceil(ymin);y<=Math.floor(ymax);y++){
+    if(y===0)continue;
+    const py=oy-y*u;
+    glabels+=`<line x1="${ox-4}" y1="${py}" x2="${ox+4}" y2="${py}" stroke="var(--muted)" stroke-width="1"/>`;
+    // Label y à gauche de l'axe — HORS de la zone des droites
+    glabels+=`<text x="${ox-10}" y="${py+4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="sans-serif">${y}</text>`;
+  }
+  glabels+=`<text x="${ox-10}" y="${oy+14}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="sans-serif">O</text>`;
+  glabels+=`<text x="${W-8}" y="${oy+14}" font-size="11" fill="var(--muted)" font-family="sans-serif">${labelAxeX||'x'}</text>`;
+  glabels+=`<text x="${ox+6}" y="14" font-size="11" fill="var(--muted)" font-family="sans-serif">${labelAxeY||'y'}</text>`;
+  // droites
+  let dlines='';
+  (droites||[]).forEach(d=>{
+    // coords math → pixels — on trace aux bords du viewbox
+    const px1=ox+d.x1*u, py1=oy-d.y1*u;
+    const px2=ox+d.x2*u, py2=oy-d.y2*u;
+    dlines+=`<line x1="${px1}" y1="${py1}" x2="${px2}" y2="${py2}" stroke="${d.color}" stroke-width="2"/>`;
+    // label de la droite à l'extrémité haute
+    if(d.label){
+      const lx=px2+4, ly=py2+4;
+      dlines+=`<text x="${lx}" y="${ly}" font-size="12" fill="${d.color}" font-family="sans-serif" font-weight="600">${d.label}</text>`;
+    }
+  });
+  return `<svg width="100%" viewBox="0 0 ${W} ${H}" style="max-width:${W}px" role="img"><title>Repère orthogonal</title><desc>Repère avec droites</desc>${axes}${grid}${glabels}${dlines}</svg>`;
+}
+
+// SVG triangle Pythagore
+function svgPythaTriangle(cfg){
+  // A, B (angle droit), C : coordonnées pixel
+  const {A,B,C,labelAB,labelBC,labelAC,showArcA}=cfg;
+  let out=`<svg width="100%" viewBox="0 0 320 260" style="max-width:300px" role="img"><title>Triangle rectangle</title><desc>Triangle ABC rectangle en B</desc>`;
+  // côtés
+  out+=`<line x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}" stroke="var(--muted)" stroke-width="2"/>`;
+  out+=`<line x1="${B.x}" y1="${B.y}" x2="${C.x}" y2="${C.y}" stroke="var(--muted)" stroke-width="2"/>`;
+  out+=`<line x1="${A.x}" y1="${A.y}" x2="${C.x}" y2="${C.y}" stroke="var(--accent)" stroke-width="2.5"/>`;
+  // angle droit en B
+  const sq=12;
+  out+=`<polyline points="${B.x},${B.y-sq} ${B.x+sq},${B.y-sq} ${B.x+sq},${B.y}" fill="none" stroke="var(--muted)" stroke-width="1.5"/>`;
+  // arc en A si demandé
+  if(showArcA){
+    const dx=C.x-A.x,dy=C.y-A.y;
+    const angle=Math.atan2(dy,dx);
+    const r=28;
+    const ex=A.x+r*Math.cos(angle),ey=A.y+r*Math.sin(angle);
+    out+=`<path d="M ${A.x+r},${A.y} A ${r},${r} 0 0,1 ${ex.toFixed(1)},${ey.toFixed(1)}" fill="none" stroke="var(--orange)" stroke-width="1.5"/>`;
+  }
+  // sommets
+  [[A,'A'],[B,'B'],[C,'C']].forEach(([p,l])=>{
+    out+=`<circle cx="${p.x}" cy="${p.y}" r="3" fill="var(--text)"/>`;
+  });
+  // labels sommets — déportés hors des côtés
+  out+=`<text x="${A.x-16}" y="${A.y+6}" font-size="14" fill="var(--text)" font-weight="600" font-family="sans-serif">A</text>`;
+  out+=`<text x="${B.x+8}" y="${B.y+16}" font-size="14" fill="var(--text)" font-weight="600" font-family="sans-serif">B</text>`;
+  out+=`<text x="${C.x+8}" y="${C.y-4}" font-size="14" fill="var(--text)" font-weight="600" font-family="sans-serif">C</text>`;
+  // labels côtés — dans l'espace libre
+  if(labelAB) out+=`<text x="${(A.x+B.x)/2-22}" y="${(A.y+B.y)/2+5}" text-anchor="end" font-size="12" fill="var(--accent)" font-family="sans-serif">${labelAB}</text>`;
+  if(labelBC) out+=`<text x="${B.x+14}" y="${(B.y+C.y)/2}" font-size="12" fill="var(--accent)" font-family="sans-serif">${labelBC}</text>`;
+  if(labelAC) out+=`<text x="${(A.x+C.x)/2+14}" y="${(A.y+C.y)/2}" font-size="12" fill="var(--green)" font-family="sans-serif">${labelAC}</text>`;
+  out+=`</svg>`;
+  return out;
+}
+
+// SVG Thalès emboîté
+function svgThalesEmboite(cfg){
+  const {letts,AD,DB,AE,EC}=cfg;
+  const [lA,lB,lC,lD,lE]=letts;
+  const Ax=190,Ay=30,Bx=70,By=240,Cx=310,Cy=240;
+  const t=0.55;
+  const Dx=Math.round(Ax+t*(Bx-Ax)),Dy=Math.round(Ay+t*(By-Ay));
+  const Ex=Math.round(Ax+t*(Cx-Ax)),Ey=Math.round(Ay+t*(Cy-Ay));
+  let out=`<svg width="100%" viewBox="0 0 360 270" style="max-width:340px" role="img"><title>Thalès triangles emboîtés</title><desc>Grand triangle avec droites parallèles</desc>`;
+  out+=`<line x1="${Ax}" y1="${Ay}" x2="${Bx}" y2="${By}" stroke="var(--muted)" stroke-width="2"/>`;
+  out+=`<line x1="${Ax}" y1="${Ay}" x2="${Cx}" y2="${Cy}" stroke="var(--muted)" stroke-width="2"/>`;
+  out+=`<line x1="${Bx}" y1="${By}" x2="${Cx}" y2="${Cy}" stroke="var(--muted)" stroke-width="2"/>`;
+  out+=`<line x1="${Dx}" y1="${Dy}" x2="${Ex}" y2="${Ey}" stroke="var(--orange)" stroke-width="2"/>`;
+  // marqueurs parallèles
+  const mx=Math.round((Bx+Cx)/2),my=By;
+  out+=`<line x1="${mx-8}" y1="${my-5}" x2="${mx-2}" y2="${my}" stroke="var(--muted)" stroke-width="1.5"/>`;
+  out+=`<line x1="${mx-2}" y1="${my}" x2="${mx-8}" y2="${my+5}" stroke="var(--muted)" stroke-width="1.5"/>`;
+  const mxd=Math.round((Dx+Ex)/2),myd=Dy;
+  out+=`<line x1="${mxd-8}" y1="${myd-5}" x2="${mxd-2}" y2="${myd}" stroke="var(--orange)" stroke-width="1.5"/>`;
+  out+=`<line x1="${mxd-2}" y1="${myd}" x2="${mxd-8}" y2="${myd+5}" stroke="var(--orange)" stroke-width="1.5"/>`;
+  // sommets
+  [[Ax,Ay,lA,-8,-14,'middle'],[Bx,By,lB,-14,8,'end'],[Cx,Cy,lC,10,8,'start'],[Dx,Dy,lD,-14,4,'end'],[Ex,Ey,lE,10,4,'start']].forEach(([x,y,l,dx,dy,anchor])=>{
+    out+=`<circle cx="${x}" cy="${y}" r="3" fill="var(--text)"/>`;
+    out+=`<text x="${x+dx}" y="${y+dy}" text-anchor="${anchor}" font-size="13" fill="var(--text)" font-weight="600" font-family="sans-serif">${l}</text>`;
+  });
+  // mesures hors des côtés
+  const midAD=[(Ax+Dx)/2,(Ay+Dy)/2];
+  const midDB=[(Dx+Bx)/2,(Dy+By)/2];
+  const midAE=[(Ax+Ex)/2,(Ay+Ey)/2];
+  const midEC=[(Ex+Cx)/2,(Ey+Cy)/2];
+  out+=`<text x="${midAD[0]-16}" y="${midAD[1]}" text-anchor="end" font-size="11" fill="var(--accent)" font-family="sans-serif">${lA}${lD}=${AD}</text>`;
+  out+=`<text x="${midDB[0]-16}" y="${midDB[1]+4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="sans-serif">${lD}${lB}=${DB}</text>`;
+  out+=`<text x="${midAE[0]+16}" y="${midAE[1]}" text-anchor="start" font-size="11" fill="var(--accent)" font-family="sans-serif">${lA}${lE}=${AE}</text>`;
+  out+=`<text x="${midEC[0]+16}" y="${midEC[1]+4}" text-anchor="start" font-size="11" fill="var(--muted)" font-family="sans-serif">${lE}${lC}=${EC}</text>`;
+  out+='</svg>';
+  return out;
+}
+
+
+// SVG Thalès sablier
+// Convention : A,O,D alignés (sécante 1) ; B,O,C alignés (sécante 2)
+// AB ∥ DC
+function svgThalesSablier(cfg){
+  const {OA,OB,OC,OD,lettres}=cfg;
+  const [lA,lB,lO,lC,lD]=lettres;
+  // A=(90,55) O=(210,148) D=(300,210) → sécante 1 : A,O,D alignés
+  // B=(330,55) O=(210,148) C=(140,210) → sécante 2 : B,O,C alignés
+  const Ox=210,Oy=148,Ax=90,Ay=55,Bx=330,By=55,Cx=140,Cy=210,Dx=300,Dy=210;
+  let out=`<svg width="100%" viewBox="0 0 380 270" style="max-width:360px" role="img"><title>Thalès sablier</title><desc>Deux triangles croisés en O</desc>`;
+  // Sécante 1 : A → O → D
+  out+=`<line x1="${Ax}" y1="${Ay}" x2="${Dx}" y2="${Dy}" stroke="var(--muted)" stroke-width="1.5"/>`;
+  // Sécante 2 : B → O → C
+  out+=`<line x1="${Bx}" y1="${By}" x2="${Cx}" y2="${Cy}" stroke="var(--muted)" stroke-width="1.5"/>`;
+  // Segment AB (haut) — sans flèche
+  out+=`<line x1="${Ax}" y1="${Ay}" x2="${Bx}" y2="${By}" stroke="#4f8cff" stroke-width="2"/>`;
+  // Segment DC (bas) — sans flèche
+  out+=`<line x1="${Dx}" y1="${Dy}" x2="${Cx}" y2="${Cy}" stroke="var(--orange)" stroke-width="2"/>`;
+  const mx1=Math.round((Ax+Bx)/2),my1=Ay;
+  out+=`<line x1="${mx1-8}" y1="${my1-5}" x2="${mx1-2}" y2="${my1}" stroke="#4f8cff" stroke-width="1.5"/>`;
+  out+=`<line x1="${mx1-2}" y1="${my1}" x2="${mx1-8}" y2="${my1+5}" stroke="#4f8cff" stroke-width="1.5"/>`;
+  const mx2=Math.round((Cx+Dx)/2),my2=Cy;
+  out+=`<line x1="${mx2-8}" y1="${my2-5}" x2="${mx2-2}" y2="${my2}" stroke="var(--orange)" stroke-width="1.5"/>`;
+  out+=`<line x1="${mx2-2}" y1="${my2}" x2="${mx2-8}" y2="${my2+5}" stroke="var(--orange)" stroke-width="1.5"/>`;
+  out+=`<circle cx="${Ox}" cy="${Oy}" r="4" fill="var(--text)"/>`;
+  [[Ax,Ay,lA,-14,-6,'end'],[Bx,By,lB,10,-6,'start'],[Cx,Cy,lC,-14,14,'end'],[Dx,Dy,lD,10,14,'start']].forEach(([x,y,l,dx,dy,anchor])=>{
+    out+=`<circle cx="${x}" cy="${y}" r="3" fill="var(--text)"/>`;
+    out+=`<text x="${x+dx}" y="${y+dy}" text-anchor="${anchor}" font-size="13" fill="var(--text)" font-weight="600" font-family="sans-serif">${l}</text>`;
+  });
+  out+=`<text x="${Ox+10}" y="${Oy+5}" font-size="13" fill="var(--text)" font-weight="600" font-family="sans-serif">${lO}</text>`;
+  // Milieux des segments pour placer les mesures HORS des traits
+  const midOA=[(Ox+Ax)/2,(Oy+Ay)/2]; // sécante 1, partie haute
+  const midOD=[(Ox+Dx)/2,(Oy+Dy)/2]; // sécante 1, partie basse
+  const midOB=[(Ox+Bx)/2,(Oy+By)/2]; // sécante 2, partie haute
+  const midOC=[(Ox+Cx)/2,(Oy+Cy)/2]; // sécante 2, partie basse
+  // OA et OD sur sécante 1 (gauche haut / droite bas)
+  out+=`<text x="${midOA[0]-16}" y="${midOA[1]}" text-anchor="end" font-size="11" fill="#4f8cff" font-family="sans-serif">${lO}${lA}=${OA}</text>`;
+  out+=`<text x="${midOD[0]+16}" y="${midOD[1]+4}" text-anchor="start" font-size="11" fill="#4f8cff" font-family="sans-serif">${lO}${lD}=${OD}</text>`;
+  // OB et OC sur sécante 2 (droite haut / gauche bas)
+  out+=`<text x="${midOB[0]+16}" y="${midOB[1]}" text-anchor="start" font-size="11" fill="var(--orange)" font-family="sans-serif">${lO}${lB}=${OB}</text>`;
+  out+=`<text x="${midOC[0]-16}" y="${midOC[1]+4}" text-anchor="end" font-size="11" fill="var(--orange)" font-family="sans-serif">${lO}${lC}=${OC}</text>`;
+  out+='</svg>';
+  return out;
+}
+
+
+// SVG Cylindre
+function svgCylindre(cfg){
+  const r=cfg.r||'r',h=cfg.h||'h',label=cfg.label||'';
+  const cx=110,ctop=45,cbot=165,rx=55,ry=15;
+  let s=`<svg width="100%" viewBox="0 0 260 210" style="max-width:220px" role="img"><title>Cylindre</title>`;
+  s+=`<rect x="${cx-rx}" y="${ctop}" width="${rx*2}" height="${cbot-ctop}" fill="var(--surface2)" stroke="var(--muted)" stroke-width="1.5"/>`;
+  s+=`<ellipse cx="${cx}" cy="${cbot}" rx="${rx}" ry="${ry}" fill="var(--surface2)" stroke="var(--muted)" stroke-width="1.5"/>`;
+  s+=`<ellipse cx="${cx}" cy="${ctop}" rx="${rx}" ry="${ry}" fill="var(--card)" stroke="var(--muted)" stroke-width="1.5"/>`;
+  s+=`<line x1="${cx}" y1="${ctop}" x2="${cx+rx}" y2="${ctop}" stroke="var(--accent)" stroke-width="1.5"/>`;
+  s+=`<text x="${cx+rx/2}" y="${ctop-7}" text-anchor="middle" font-size="11" fill="var(--accent)" font-family="sans-serif">r = ${r}</text>`;
+  s+=`<line x1="${cx+rx+22}" y1="${ctop}" x2="${cx+rx+22}" y2="${cbot}" stroke="var(--green)" stroke-width="1.5"/>`;
+  s+=`<line x1="${cx+rx+16}" y1="${ctop}" x2="${cx+rx+28}" y2="${ctop}" stroke="var(--green)" stroke-width="1"/>`;
+  s+=`<line x1="${cx+rx+16}" y1="${cbot}" x2="${cx+rx+28}" y2="${cbot}" stroke="var(--green)" stroke-width="1"/>`;
+  s+=`<text x="${cx+rx+32}" y="${(ctop+cbot)/2+4}" font-size="11" fill="var(--green)" font-family="sans-serif">h = ${h}</text>`;
+  if(label) s+=`<text x="${cx}" y="${cbot+ry+18}" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="sans-serif">${label}</text>`;
+  s+=`</svg>`;
+  return s;
+}
+
+// SVG Cylindre + demi-sphère
+function svgCylindreDemiSphere(cfg){
+  const r=cfg.r||'r',h=cfg.h||'h',label=cfg.label||'';
+  const cx=110,cbot=185,ctop=cbot-110,rx=55,ry=15;
+  let s=`<svg width="100%" viewBox="0 0 260 215" style="max-width:220px" role="img"><title>Cylindre surmonté d une demi-sphère</title>`;
+  s+=`<rect x="${cx-rx}" y="${ctop}" width="${rx*2}" height="${cbot-ctop}" fill="var(--surface2)" stroke="var(--muted)" stroke-width="1.5"/>`;
+  s+=`<ellipse cx="${cx}" cy="${cbot}" rx="${rx}" ry="${ry}" fill="var(--surface2)" stroke="var(--muted)" stroke-width="1.5"/>`;
+  s+=`<ellipse cx="${cx}" cy="${ctop}" rx="${rx}" ry="${ry}" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="5 3"/>`;
+  s+=`<path d="M ${cx-rx},${ctop} A ${rx},${rx} 0 0,1 ${cx+rx},${ctop}" fill="var(--card)" stroke="var(--muted)" stroke-width="1.5"/>`;
+  s+=`<line x1="${cx}" y1="${ctop}" x2="${cx+rx}" y2="${ctop}" stroke="var(--accent)" stroke-width="1.5"/>`;
+  s+=`<text x="${cx+rx/2}" y="${ctop-7}" text-anchor="middle" font-size="11" fill="var(--accent)" font-family="sans-serif">r = ${r}</text>`;
+  s+=`<line x1="${cx+rx+22}" y1="${ctop}" x2="${cx+rx+22}" y2="${cbot}" stroke="var(--green)" stroke-width="1.5"/>`;
+  s+=`<line x1="${cx+rx+16}" y1="${ctop}" x2="${cx+rx+28}" y2="${ctop}" stroke="var(--green)" stroke-width="1"/>`;
+  s+=`<line x1="${cx+rx+16}" y1="${cbot}" x2="${cx+rx+28}" y2="${cbot}" stroke="var(--green)" stroke-width="1"/>`;
+  s+=`<text x="${cx+rx+32}" y="${(ctop+cbot)/2+4}" font-size="11" fill="var(--green)" font-family="sans-serif">h = ${h}</text>`;
+  if(label) s+=`<text x="${cx}" y="${cbot+ry+18}" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="sans-serif">${label}</text>`;
+  s+=`</svg>`;
+  return s;
+}
+
+// SVG Sphère
+function svgSphere(cfg){
+  const r=cfg.r||'r',label=cfg.label||'';
+  let s=`<svg width="100%" viewBox="0 0 200 185" style="max-width:180px" role="img"><title>Sphère</title>`;
+  s+=`<circle cx="95" cy="90" r="72" fill="var(--surface2)" stroke="var(--muted)" stroke-width="1.5"/>`;
+  s+=`<ellipse cx="95" cy="90" rx="72" ry="18" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="5 3"/>`;
+  s+=`<circle cx="95" cy="90" r="3" fill="var(--text)"/>`;
+  s+=`<line x1="95" y1="90" x2="167" y2="90" stroke="var(--accent)" stroke-width="1.5"/>`;
+  s+=`<text x="134" y="82" font-size="11" fill="var(--accent)" font-family="sans-serif">r = ${r}</text>`;
+  if(label) s+=`<text x="95" y="178" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="sans-serif">${label}</text>`;
+  s+=`</svg>`;
+  return s;
+}
+
+// SVG Cône
+function svgCone(cfg){
+  const r=cfg.r||'r',h=cfg.h||'h',label=cfg.label||'';
+  let s=`<svg width="100%" viewBox="0 0 230 200" style="max-width:210px" role="img"><title>Cône</title>`;
+  s+=`<line x1="115" y1="20" x2="45"  y2="165" stroke="var(--muted)" stroke-width="1.5"/>`;
+  s+=`<line x1="115" y1="20" x2="185" y2="165" stroke="var(--muted)" stroke-width="1.5"/>`;
+  s+=`<ellipse cx="115" cy="165" rx="70" ry="17" fill="var(--surface2)" stroke="var(--muted)" stroke-width="1.5"/>`;
+  s+=`<circle cx="115" cy="20" r="3" fill="var(--text)"/>`;
+  s+=`<line x1="115" y1="20" x2="115" y2="165" stroke="var(--green)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+  s+=`<text x="120" y="100" font-size="11" fill="var(--green)" font-family="sans-serif">h = ${h}</text>`;
+  s+=`<line x1="115" y1="165" x2="185" y2="165" stroke="var(--accent)" stroke-width="1.5"/>`;
+  s+=`<text x="153" y="182" text-anchor="middle" font-size="11" fill="var(--accent)" font-family="sans-serif">r = ${r}</text>`;
+  if(label) s+=`<text x="115" y="196" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="sans-serif">${label}</text>`;
+  s+=`</svg>`;
+  return s;
+}
+
+// SVG Pavé droit
+function svgPave(cfg){
+  const l=cfg.l||'L',la=cfg.la||'l',h=cfg.h||'h',label=cfg.label||'';
+  let s=`<svg width="100%" viewBox="0 0 250 190" style="max-width:230px" role="img"><title>Pavé droit</title>`;
+  s+=`<rect x="30" y="65" width="110" height="85" fill="var(--surface2)" stroke="var(--muted)" stroke-width="1.5"/>`;
+  s+=`<polygon points="30,65 65,30 175,30 140,65" fill="var(--card)" stroke="var(--muted)" stroke-width="1.5"/>`;
+  s+=`<polygon points="140,65 175,30 175,115 140,150" fill="var(--surface2)" stroke="var(--muted)" stroke-width="1.5" opacity="0.75"/>`;
+  s+=`<line x1="30"  y1="150" x2="65"  y2="115" stroke="var(--muted)" stroke-width="1" stroke-dasharray="4 3"/>`;
+  s+=`<line x1="65"  y1="30"  x2="65"  y2="115" stroke="var(--muted)" stroke-width="1" stroke-dasharray="4 3"/>`;
+  s+=`<line x1="65"  y1="115" x2="175" y2="115" stroke="var(--muted)" stroke-width="1" stroke-dasharray="4 3"/>`;
+  s+=`<text x="85"  y="168" text-anchor="middle" font-size="11" fill="var(--accent)"  font-family="sans-serif">L = ${l}</text>`;
+  s+=`<text x="162" y="85"  font-size="11"        fill="var(--green)"  font-family="sans-serif">h = ${h}</text>`;
+  s+=`<text x="108" y="48"  text-anchor="middle"  font-size="11" fill="var(--orange)" font-family="sans-serif">l = ${la}</text>`;
+  if(label) s+=`<text x="90" y="184" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="sans-serif">${label}</text>`;
+  s+=`</svg>`;
+  return s;
+}
+
+function svgOmbreThales(){
+  return `<svg width="100%" viewBox="0 0 440 230" style="max-width:440px" role="img">
+  <title>Ombres panneau et arbre — configuration de Thalès</title>
+  <desc>Point S sommet commun, panneau AP et arbre CT, ombres sur le sol</desc>
+  <!-- Sol -->
+  <line x1="20" y1="190" x2="420" y2="190" stroke="var(--muted)" stroke-width="2"/>
+  <!-- Soleil S (point de convergence) -->
+  <circle cx="35" cy="25" r="8" fill="var(--orange)" opacity="0.85"/>
+  <text x="48" y="30" font-size="11" fill="var(--orange)" font-family="sans-serif" font-weight="600">S</text>
+  <!-- Rayon 1 : S → sommet panneau P(140,95) → bout ombre B(205,190) -->
+  <line x1="35" y1="25" x2="205" y2="190" stroke="var(--orange)" stroke-width="1" stroke-dasharray="6 4"/>
+  <!-- Rayon 2 : S → sommet arbre T(295,45) → bout ombre D(420,190) -->
+  <line x1="35" y1="25" x2="420" y2="190" stroke="var(--orange)" stroke-width="1" stroke-dasharray="6 4"/>
+  <!-- Panneau vertical : A=(140,190) → P=(140,95) -->
+  <line x1="140" y1="190" x2="140" y2="95" stroke="#4f8cff" stroke-width="2.5"/>
+  <circle cx="140" cy="190" r="3" fill="var(--muted)"/>
+  <circle cx="140" cy="95"  r="3" fill="#4f8cff"/>
+  <!-- Hauteur panneau à gauche -->
+  <text x="124" y="148" text-anchor="end" font-size="11" fill="#4f8cff" font-family="sans-serif">AP = 1,8 m</text>
+  <!-- Ombre panneau : A(140,190) → B(205,190) -->
+  <line x1="140" y1="190" x2="205" y2="190" stroke="#4f8cff" stroke-width="2.5"/>
+  <text x="172" y="208" text-anchor="middle" font-size="11" fill="#4f8cff" font-family="sans-serif">AB = 2,4 m</text>
+  <!-- Arbre vertical : C=(295,190) → T=(295,45) -->
+  <line x1="295" y1="190" x2="295" y2="45" stroke="#3dd68c" stroke-width="2.5"/>
+  <circle cx="295" cy="190" r="3" fill="var(--muted)"/>
+  <circle cx="295" cy="45"  r="3" fill="#3dd68c"/>
+  <!-- Hauteur arbre à droite -->
+  <text x="305" y="122" font-size="11" fill="#3dd68c" font-family="sans-serif">CT = ?</text>
+  <!-- Ombre arbre : C(295,190) → D(420,190) -->
+  <line x1="295" y1="190" x2="420" y2="190" stroke="#3dd68c" stroke-width="2.5"/>
+  <text x="357" y="208" text-anchor="middle" font-size="11" fill="#3dd68c" font-family="sans-serif">CD = 8 m</text>
+  <!-- Labels points sol -->
+  <text x="140" y="220" text-anchor="middle" font-size="12" fill="var(--text)" font-weight="600" font-family="sans-serif">A</text>
+  <text x="205" y="220" text-anchor="middle" font-size="12" fill="var(--text)" font-weight="600" font-family="sans-serif">B</text>
+  <text x="295" y="220" text-anchor="middle" font-size="12" fill="var(--text)" font-weight="600" font-family="sans-serif">C</text>
+  <text x="420" y="220" text-anchor="middle" font-size="12" fill="var(--text)" font-weight="600" font-family="sans-serif">D</text>
+  <!-- Labels sommets -->
+  <text x="128" y="93"  text-anchor="end" font-size="12" fill="#4f8cff" font-weight="600" font-family="sans-serif">P</text>
+  <text x="305" y="43"  font-size="12" fill="#3dd68c" font-weight="600" font-family="sans-serif">T</text>
+</svg>`;
+}
+
+// ═══════════════════════════════════════════════════
+// BANQUE D'EXERCICES (10 sujets × 4-5 exercices)
+// ═══════════════════════════════════════════════════
+
+// Chaque sujet = tableau d'exercices
+// Chaque exercice = {theme, pts, context?, figure?, questions:[], correction:[]}
+
+const SUJETS = [
+
+// ══════════════════════════════════════════════════
+// SUJET 1
+// ══════════════════════════════════════════════════
+[
+  {
+    theme:"Statistiques & probabilités", pts:3,
+    context:`Un collège mène une enquête sur le mode de transport des 420 élèves. Les résultats sont présentés dans le tableau ci-dessous.<br>
+    <table style="border-collapse:collapse;margin:12px 0;font-size:.85rem;width:100%">
+      <tr style="background:var(--surface2)"><th style="border:1px solid var(--border);padding:6px 10px">Transport</th><th style="border:1px solid var(--border);padding:6px 10px">À pied</th><th style="border:1px solid var(--border);padding:6px 10px">Vélo</th><th style="border:1px solid var(--border);padding:6px 10px">Bus</th><th style="border:1px solid var(--border);padding:6px 10px">Voiture</th></tr>
+      <tr><td style="border:1px solid var(--border);padding:6px 10px;text-align:center">Effectif</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center">126</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center">84</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center">?</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center">63</td></tr>
+    </table>`,
+    questions:[
+      "Calculer l'effectif des élèves venant en bus.",
+      `Montrer que la fréquence des élèves venant à vélo est égale à ${frac(1,5)}.`,
+      "L'affirmation « Plus de 50% des élèves viennent à pied ou en bus » est-elle vraie ? Justifier.",
+      "On choisit un élève au hasard. Quelle est la probabilité qu'il vienne en voiture ?"
+    ],
+    correction:[
+      {q:"Question 1", r:`Effectif bus = 420 − 126 − 84 − 63 = <strong>147 élèves</strong>.`},
+      {q:"Question 2", r:`Fréquence vélo = ${frac(84,420)} = ${frac(1,5)} (on simplifie par 84). ✓`},
+      {q:"Question 3", r:`À pied + bus = 126 + 147 = 273. Fréquence = ${frac(273,420)} = 0,65 = 65% > 50%. L'affirmation est <strong>vraie</strong>.`},
+      {q:"Question 4", r:`P(voiture) = ${frac(63,420)} = ${frac(3,20)} = <strong>0,15</strong>.`}
+    ]
+  },
+  {
+    theme:"Calcul littéral & équations", pts:3,
+    context:`Un jardinier a une facture d'eau de 520 € par an. Il installe un récupérateur d'eau qui coûte 185 € à l'achat et 12 € par an d'entretien, mais lui économise 48 € par an.`,
+    questions:[
+      "Exprimer en fonction de n le coût total du système après n années.",
+      "Exprimer en fonction de n les économies réalisées après n années.",
+      "Résoudre l'équation permettant de trouver au bout de combien d'années l'installation devient rentable.",
+      "Développer et réduire l'expression (2n − 3)(n + 4)."
+    ],
+    correction:[
+      {q:"Question 1", r:`Coût total = 185 + 12n (euros).`},
+      {q:"Question 2", r:`Économies = 48n (euros).`},
+      {q:"Question 3", r:`Rentable quand 48n ≥ 185 + 12n → 36n ≥ 185 → n ≥ 5,14… → à partir de la <strong>6ème année</strong>.`},
+      {q:"Question 4", r:`(2n−3)(n+4) = 2n²+8n−3n−12 = <strong>2n²+5n−12</strong>.`}
+    ]
+  },
+  {
+    theme:"Fonctions", pts:4,
+    figure: svgRepere({ox:200,oy:200,u:40,W:420,H:340,xmin:-2,xmax:3,ymin:-3,ymax:5,
+      droites:[
+        {x1:-1.6,y1:-1.8,x2:0.9,y2:4.7,color:'#4f8cff',label:'(d₁)'},
+        {x1:-0.75,y1:-3,x2:1,y2:4,color:'#e06c3a',label:'(d₂)'}
+      ]}),
+    questions:[
+      "Associer à chaque droite la fonction qu'elle représente. Justifier.",
+      `On admet que (d₁) a pour équation y = 3x + 2. Calculer par deux méthodes le coefficient directeur de (d₁).`,
+      "Déterminer graphiquement les coordonnées du point d'intersection de (d₁) et (d₂).",
+      "Déterminer algébriquement l'antécédent de 14 par la fonction f : x ↦ 3x + 2."
+    ],
+    correction:[
+      {q:"Question 1", r:`(d₁) coupe l'axe y en y=2 → f(x)=3x+2. (d₂) passe par O → g(x)=4x.`},
+      {q:"Question 2", r:`<strong>Méthode 1</strong> : f(x)=3x+2, coefficient directeur = <strong>3</strong>.<br><strong>Méthode 2</strong> : points A(0;2) et B(−1;−1) sur (d₁). a = ${frac('−1−2','−1−0')} = ${frac('−3','−1')} = <strong>3</strong>.`},
+      {q:"Question 3", r:`Intersection graphique : <strong>(2 ; 8)</strong>.`},
+      {q:"Question 4", r:`3x+2=14 → 3x=12 → x=<strong>4</strong>. L'antécédent de 14 est 4.`}
+    ]
+  },
+  {
+    theme:"Géométrie — Pythagore & trigo", pts:4,
+    figure: `<div style="display:flex;justify-content:center;"><svg width="100%" viewBox="0 0 300 240" style="max-width:290px" role="img">
+  <title>Triangle ABC rectangle en B</title>
+  <!-- Côtés -->
+  <line x1="50" y1="205" x2="210" y2="205" stroke="var(--muted)" stroke-width="2"/>
+  <line x1="210" y1="205" x2="210" y2="65"  stroke="var(--muted)" stroke-width="2"/>
+  <line x1="50"  y1="205" x2="210" y2="65"  stroke="var(--accent)" stroke-width="2"/>
+  <!-- Angle droit en B -->
+  <polyline points="210,191 196,191 196,205" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+  <!-- Arc angle en A — rayon 32, bien dans le triangle, LOIN du label AB
+    A=(50,205), B=(210,205), C=(210,65)
+    Dir AC: atan2(65-205, 210-50)=atan2(-140,160)≈-41°
+    Arc de 0° à -41°, rayon=34
+    départ: (84, 205)
+    arrivée: (50+34*cos(41°), 205-34*sin(41°)) = (50+25.6, 205-22.3) = (75.6, 182.7)
+  -->
+  <path d="M 84,205 A 34,34 0 0,0 76,183" fill="none" stroke="var(--orange)" stroke-width="1.5"/>
+  <!-- Sommets -->
+  <circle cx="50"  cy="205" r="3" fill="var(--text)"/>
+  <circle cx="210" cy="205" r="3" fill="var(--text)"/>
+  <circle cx="210" cy="65"  r="3" fill="var(--text)"/>
+  <!-- Labels sommets -->
+  <text x="36"  y="222" font-size="13" fill="var(--text)" font-weight="600" font-family="sans-serif">A</text>
+  <text x="218" y="222" font-size="13" fill="var(--text)" font-weight="600" font-family="sans-serif">B</text>
+  <text x="218" y="63"  font-size="13" fill="var(--text)" font-weight="600" font-family="sans-serif">C</text>
+  <!-- Mesures côtés — bien hors des traits -->
+  <text x="130" y="222" text-anchor="middle" font-size="11" fill="var(--accent)" font-family="sans-serif">AB = 6 cm</text>
+  <text x="224" y="140" font-size="11" fill="var(--green)" font-family="sans-serif">BC = ?</text>
+  <text x="108" y="128" text-anchor="end" font-size="11" fill="var(--accent)" font-family="sans-serif">AC = 10 cm</text>
+</svg></div>`,
+    questions:[
+      `Calculer cos${ang('C','A','B')}.`,
+      "Calculer BC.",
+      `En déduire la mesure de l'angle ${ang('C','A','B')}, arrondie au degré.`,
+      "On place un point D sur [BC] tel que BD = 4 cm. Calculer AD."
+    ],
+    correction:[
+      {q:"Question 1", r:`Dans le triangle ABC rectangle en B, le côté adjacent à l'angle en A est AB = 6 cm et l'hypoténuse est AC = 10 cm. Donc cos${ang('C','A','B')} = ${frac('AB','AC')} = ${frac(6,10)} = ${frac(3,5)}.`},
+      {q:"Question 2", r:`BC² = AC² − AB² = 10² − 6² = 100 − 36 = 64, donc BC = <strong>8 cm</strong>.`},
+      {q:"Question 3", r:`${ang('C','A','B')} = arccos(${frac(3,5)}) ≈ <strong>53°</strong>.`},
+      {q:"Question 4", r:`Dans le triangle ABD rectangle en B : AD² = AB² + BD² = 6² + 4² = 36 + 16 = 52, donc AD = √52 ≈ <strong>7,21 cm</strong>.`}
+    ]
+  }
+],
+
+// ══════════════════════════════════════════════════
+// SUJET 2
+// ══════════════════════════════════════════════════
+[
+  {
+    theme:"Statistiques & probabilités", pts:3,
+    context:`On lance deux fois de suite un dé équilibré à 6 faces et on s'intéresse à la parité des résultats obtenus.<br>Le tableau ci-dessous donne toutes les issues possibles :<div style="margin:14px 0;overflow-x:auto;"><table style="border-collapse:collapse;font-size:.82rem;font-family:sans-serif;"><tr><th style="border:1px solid var(--border);padding:6px 10px;background:var(--surface2);color:var(--muted)">1er \ 2ème</th><th style="border:1px solid var(--border);padding:6px 10px;background:var(--surface2);color:var(--text);font-weight:600">1</th><th style="border:1px solid var(--border);padding:6px 10px;background:var(--surface2);color:var(--text);font-weight:600">2</th><th style="border:1px solid var(--border);padding:6px 10px;background:var(--surface2);color:var(--text);font-weight:600">3</th><th style="border:1px solid var(--border);padding:6px 10px;background:var(--surface2);color:var(--text);font-weight:600">4</th><th style="border:1px solid var(--border);padding:6px 10px;background:var(--surface2);color:var(--text);font-weight:600">5</th><th style="border:1px solid var(--border);padding:6px 10px;background:var(--surface2);color:var(--text);font-weight:600">6</th></tr><tr><th style="border:1px solid var(--border);padding:6px 10px;background:var(--surface2);color:var(--text);font-weight:600">1</th><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(1;1)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(1;2)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(1;3)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(1;4)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(1;5)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--green);background:rgba(61,214,140,.08)">(1;6)</td></tr><tr><th style="border:1px solid var(--border);padding:6px 10px;background:var(--surface2);color:var(--text);font-weight:600">2</th><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(2;1)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(2;2)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(2;3)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(2;4)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--green);background:rgba(61,214,140,.08)">(2;5)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(2;6)</td></tr><tr><th style="border:1px solid var(--border);padding:6px 10px;background:var(--surface2);color:var(--text);font-weight:600">3</th><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(3;1)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(3;2)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(3;3)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--green);background:rgba(61,214,140,.08)">(3;4)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(3;5)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(3;6)</td></tr><tr><th style="border:1px solid var(--border);padding:6px 10px;background:var(--surface2);color:var(--text);font-weight:600">4</th><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(4;1)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(4;2)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--green);background:rgba(61,214,140,.08)">(4;3)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(4;4)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(4;5)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(4;6)</td></tr><tr><th style="border:1px solid var(--border);padding:6px 10px;background:var(--surface2);color:var(--text);font-weight:600">5</th><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(5;1)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--green);background:rgba(61,214,140,.08)">(5;2)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(5;3)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(5;4)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(5;5)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(5;6)</td></tr><tr><th style="border:1px solid var(--border);padding:6px 10px;background:var(--surface2);color:var(--text);font-weight:600">6</th><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--green);background:rgba(61,214,140,.08)">(6;1)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(6;2)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(6;3)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(6;4)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(6;5)</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center;color:var(--text);background:var(--bg)">(6;6)</td></tr></table><div style="font-size:.78rem;color:var(--muted);margin-top:6px;">Les cases vertes correspondent aux paires dont la somme est 7.</div></div>`,
+    questions:[
+      "Combien y a-t-il d'issues au total ? Ces issues sont-elles équiprobables ?",
+      "Calculer la probabilité d'obtenir deux nombres pairs.",
+      "Calculer la probabilité d'obtenir au moins un nombre impair.",
+      "Calculer la probabilité d'obtenir une somme égale à 7."
+    ],
+    correction:[
+      {q:"Question 1", r:`36 issues équiprobables (6×6). Tableau complet : (1,1),(1,2)…(6,6).`},
+      {q:"Question 2", r:`Nombres pairs : 2,4,6 → 3 sur 6 faces. P(2 pairs) = ${frac(3,6)}×${frac(3,6)} = ${frac(9,36)} = ${frac(1,4)} = <strong>0,25</strong>.`},
+      {q:"Question 3", r:`P(au moins 1 impair) = 1 − P(2 pairs) = 1 − ${frac(1,4)} = <strong>${frac(3,4)}</strong>.`},
+      {q:"Question 4", r:`Paires donnant 7 : (1,6),(2,5),(3,4),(4,3),(5,2),(6,1) → 6 issues. P = ${frac(6,36)} = ${frac(1,6)} ≈ <strong>0,167</strong>.`}
+    ]
+  },
+  {
+    theme:"Calcul littéral — identités remarquables", pts:3,
+    questions:[
+      "Développer et réduire (x + 5)(x − 5).",
+      "Factoriser x² − 49.",
+      "Résoudre l'équation (x + 5)(x − 5) = 0.",
+      "Résoudre x² = 20. Donner la valeur exacte puis une valeur approchée au centième."
+    ],
+    correction:[
+      {q:"Question 1", r:`(x+5)(x−5) = x²−25 (identité remarquable a²−b²).`},
+      {q:"Question 2", r:`x²−49 = x²−7² = <strong>(x+7)(x−7)</strong>.`},
+      {q:"Question 3", r:`x+5=0 → x=−5 ou x−5=0 → x=5. Solutions : <strong>x=−5 ou x=5</strong>.`},
+      {q:"Question 4", r:`x=√20 ou x=−√20. Valeur exacte : <strong>±√20 = ±2√5</strong>. Valeur approchée : <strong>±4,47</strong>.`}
+    ]
+  },
+  {
+    theme:"Proportionnalité & pourcentages", pts:3,
+    context:`Une boutique affiche une réduction de 15% sur tous ses articles. Un article coûte 80 € avant réduction.`,
+    questions:[
+      "Calculer le montant de la réduction.",
+      "Quel est le coefficient multiplicateur correspondant à une réduction de 15% ?",
+      "Retrouver le prix après réduction en utilisant le coefficient multiplicateur.",
+      "Après la période de soldes, le magasin augmente ses prix de 20%. Quel est le prix final de cet article par rapport au prix initial ?"
+    ],
+    correction:[
+      {q:"Question 1", r:`15% de 80 = 0,15×80 = <strong>12 €</strong>.`},
+      {q:"Question 2", r:`Coefficient multiplicateur d'une réduction de 15% = 1−0,15 = <strong>0,85</strong>.`},
+      {q:"Question 3", r:`80×0,85 = <strong>68 €</strong>.`},
+      {q:"Question 4", r:`68×1,20 = 81,6 €. Le prix final est <strong>81,60 €</strong>, soit 1,6 € de plus que le prix initial (hausse nette de 2%).`}
+    ]
+  },
+  {
+    theme:"Thalès", pts:4,
+    context:`Sur la figure ci-dessous, les droites (DE) et (BC) sont parallèles.<br>On donne : AD = 4 cm, DB = 2 cm, AE = 6 cm, EC = 3 cm, BC = 9 cm.`,
+    figure: svgThalesEmboite({letts:['A','B','C','D','E'],AD:4,DB:2,AE:6,EC:3}),
+    questions:[
+      "Montrer que D appartient au segment [AB] et que E appartient au segment [AC].",
+      "Calculer DE.",
+      "Démontrer que les triangles ADE et ABC sont semblables.",
+      "L'aire du triangle ABC est 27 cm². Calculer l'aire du triangle ADE."
+    ],
+    correction:[
+      {q:"Question 1", r:`AB = AD+DB = 4+2 = 6 > AD = 4 > 0 donc D ∈ [AB]. AC = AE+EC = 6+3 = 9 > AE = 6 > 0 donc E ∈ [AC].`},
+      {q:"Question 2", r:`D ∈ [AB], E ∈ [AC], (DE) ∥ (BC). Par le théorème de Thalès : ${frac('AD','AB')} = ${frac('DE','BC')}, soit ${frac(4,6)} = ${frac('DE',9)}, donc DE = ${frac('4×9',6)} = <strong>6 cm</strong>.`},
+      {q:"Question 3", r:`L'angle en A est commun aux deux triangles. ${frac('AD','AB')} = ${frac(4,6)} = ${frac(2,3)} et ${frac('AE','AC')} = ${frac(6,9)} = ${frac(2,3)}. Ces rapports sont égaux donc les triangles ADE et ABC sont <strong>semblables</strong> de rapport ${frac(2,3)}.`},
+      {q:"Question 4", r:`Rapport des longueurs = ${frac(2,3)}, rapport des aires = (${frac(2,3)})² = ${frac(4,9)}. Aire ADE = ${frac(4,9)} × 27 = <strong>12 cm²</strong>.`}
+    ]
+  }
+],
+
+// ══════════════════════════════════════════════════
+// SUJET 3
+// ══════════════════════════════════════════════════
+[
+  {
+    theme:"Grandeurs & mesures — volumes", pts:3,
+    context:`Une conserve cylindrique a un diamètre de 8 cm et une hauteur de 12 cm. Une bille sphérique de rayon 3 cm est placée à l'intérieur.`,
+    figure: svgCylindre({r:'4 cm',h:'12 cm',label:'Conserve'}),
+    questions:[
+      "Calculer le volume de la conserve. (π ≈ 3,14)",
+      `Calculer le volume de la bille. (formule : V = ${frac(4,3)}πr³, π ≈ 3,14)`,
+      "Calculer le volume disponible dans la conserve après y avoir placé la bille.",
+      "Exprimer ce volume disponible en litres. (1 L = 1 dm³ = 1 000 cm³)"
+    ],
+    correction:[
+      {q:"Question 1", r:`V cylindre = π×r²×h = 3,14×4²×12 = 3,14×16×12 = <strong>602,88 cm³</strong>.`},
+      {q:"Question 2", r:`V bille = ${frac(4,3)}×3,14×3³ = ${frac(4,3)}×3,14×27 = <strong>113,04 cm³</strong>.`},
+      {q:"Question 3", r:`V disponible = 602,88−113,04 = <strong>489,84 cm³</strong>.`},
+      {q:"Question 4", r:`489,84 cm³ ÷ 1000 ≈ <strong>0,49 L</strong>.`}
+    ]
+  },
+  {
+    theme:"Calcul littéral & équations", pts:3,
+    questions:[
+      "Développer et réduire 4(2x − 3) − (x + 5).",
+      "Factoriser 6x² − 9x.",
+      "Résoudre l'équation 4x − 8 = 7x + 4.",
+      "Résoudre l'équation produit (3x − 6)(2x + 4) = 0."
+    ],
+    correction:[
+      {q:"Question 1", r:`4(2x−3)−(x+5) = 8x−12−x−5 = <strong>7x−17</strong>.`},
+      {q:"Question 2", r:`6x²−9x = 3x(2x−3). Facteur commun : <strong>3x</strong>.`},
+      {q:"Question 3", r:`4x−7x = 4+8 → −3x = 12 → x = <strong>−4</strong>.`},
+      {q:"Question 4", r:`3x−6=0 → x=2 ; 2x+4=0 → x=−2. Solutions : <strong>x=2 ou x=−2</strong>.`}
+    ]
+  },
+  {
+    theme:"Fonctions affines", pts:4,
+    context:`Une piscine de 50 000 litres est en cours de remplissage. Le débit est constant : 1 200 litres par heure. La piscine contient déjà 5 000 litres.`,
+    questions:[
+      "Exprimer le volume V (en litres) en fonction du temps t (en heures).",
+      "Calculer le volume après 10 heures de remplissage.",
+      "Après combien de temps la piscine sera-t-elle pleine ?",
+      `La fonction V est-elle linéaire ou affine ? Justifier. Quel est son coefficient directeur et sa signification concrète ?`
+    ],
+    correction:[
+      {q:"Question 1", r:`V(t) = 1200t + 5000 (litres).`},
+      {q:"Question 2", r:`V(10) = 1200×10 + 5000 = 12000 + 5000 = <strong>17 000 litres</strong>.`},
+      {q:"Question 3", r:`1200t + 5000 = 50000 → 1200t = 45000 → t = 37,5 h = <strong>37 h 30 min</strong>.`},
+      {q:"Question 4", r:`V est <strong>affine</strong> (terme constant ≠ 0). Coefficient directeur = <strong>1200</strong> : la piscine se remplit de 1200 L par heure.`}
+    ]
+  },
+  {
+    theme:"Probabilités à deux épreuves", pts:4,
+    context:`Un sac contient 2 boules rouges (R) et 3 boules bleues (B). On tire successivement deux boules avec remise. Le tableau ci-dessous liste toutes les issues :<div style="margin:14px 0;overflow-x:auto;"><table style="border-collapse:collapse;font-size:.82rem;font-family:sans-serif;"><tr><th style="border:1px solid var(--border);padding:7px 12px;background:var(--surface2);color:var(--muted)">1er \ 2ème</th><th style="border:1px solid var(--border);padding:7px 12px;background:var(--surface2);color:#ff5c5c;font-weight:600">R</th><th style="border:1px solid var(--border);padding:7px 12px;background:var(--surface2);color:#ff5c5c;font-weight:600">R</th><th style="border:1px solid var(--border);padding:7px 12px;background:var(--surface2);color:#4f8cff;font-weight:600">B</th><th style="border:1px solid var(--border);padding:7px 12px;background:var(--surface2);color:#4f8cff;font-weight:600">B</th><th style="border:1px solid var(--border);padding:7px 12px;background:var(--surface2);color:#4f8cff;font-weight:600">B</th></tr><tr><th style="border:1px solid var(--border);padding:7px 12px;background:var(--surface2);color:#ff5c5c;font-weight:600">R</th><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:#ff5c5c">RR</td><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:#ff5c5c">RR</td><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:var(--orange)">RB</td><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:var(--orange)">RB</td><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:var(--orange)">RB</td></tr><tr><th style="border:1px solid var(--border);padding:7px 12px;background:var(--surface2);color:#ff5c5c;font-weight:600">R</th><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:#ff5c5c">RR</td><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:#ff5c5c">RR</td><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:var(--orange)">RB</td><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:var(--orange)">RB</td><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:var(--orange)">RB</td></tr><tr><th style="border:1px solid var(--border);padding:7px 12px;background:var(--surface2);color:#4f8cff;font-weight:600">B</th><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:var(--orange)">BR</td><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:var(--orange)">BR</td><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:#4f8cff">BB</td><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:#4f8cff">BB</td><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:#4f8cff">BB</td></tr><tr><th style="border:1px solid var(--border);padding:7px 12px;background:var(--surface2);color:#4f8cff;font-weight:600">B</th><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:var(--orange)">BR</td><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:var(--orange)">BR</td><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:#4f8cff">BB</td><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:#4f8cff">BB</td><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:#4f8cff">BB</td></tr><tr><th style="border:1px solid var(--border);padding:7px 12px;background:var(--surface2);color:#4f8cff;font-weight:600">B</th><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:var(--orange)">BR</td><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:var(--orange)">BR</td><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:#4f8cff">BB</td><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:#4f8cff">BB</td><td style="border:1px solid var(--border);padding:7px 12px;text-align:center;color:#4f8cff">BB</td></tr></table><div style="font-size:.78rem;color:var(--muted);margin-top:6px;">R=rouge, B=bleue. 25 issues équiprobables.</div></div>`,  
+    questions:[
+      "Calculer la probabilité d'obtenir deux boules rouges.",
+      "Calculer la probabilité d'obtenir une boule rouge puis une boule bleue.",
+      "Calculer la probabilité d'obtenir au moins une boule rouge.",
+      "Vérifier que la somme de toutes les probabilités est bien égale à 1."
+    ],
+    correction:[
+      {q:"Question 1", r:`P(R puis R) = ${frac(2,5)}×${frac(2,5)} = ${frac(4,25)} = <strong>0,16</strong>.`},
+      {q:"Question 2", r:`P(R puis B) = ${frac(2,5)}×${frac(3,5)} = ${frac(6,25)} = <strong>0,24</strong>.`},
+      {q:"Question 3", r:`P(au moins 1 R) = 1 − P(aucune R) = 1 − (${frac(3,5)})² = 1 − ${frac(9,25)} = ${frac(16,25)} = <strong>0,64</strong>.`},
+      {q:"Question 4", r:`25 issues équiprobables. P(RR)=4/25, P(RB)=6/25, P(BR)=6/25, P(BB)=9/25. Total : 25/25=1. ✓`}
+    ]
+  }
+],
+
+// ══════════════════════════════════════════════════
+// SUJET 4
+// ══════════════════════════════════════════════════
+[
+  {
+    theme:"Nombres — Puissances & notation scientifique", pts:3,
+    questions:[
+      "Écrire 0,000 047 en notation scientifique.",
+      "Calculer 2³ × 2⁵ en utilisant les propriétés des puissances.",
+      `Simplifier l'expression ${frac('3×10⁵','6×10²')}. Donner le résultat en notation scientifique.`,
+      "La Terre est à environ 1,5×10⁸ km du Soleil. La lumière parcourt 3×10⁵ km/s. Calculer en secondes le temps que met la lumière pour aller du Soleil à la Terre."
+    ],
+    correction:[
+      {q:"Question 1", r:`0,000047 = <strong>4,7×10⁻⁵</strong>.`},
+      {q:"Question 2", r:`2³×2⁵ = 2^(3+5) = <strong>2⁸ = 256</strong>.`},
+      {q:"Question 3", r:`${frac('3×10⁵','6×10²')} = ${frac(3,6)}×10^(5−2) = 0,5×10³ = <strong>5×10²</strong>.`},
+      {q:"Question 4", r:`t = ${frac('1,5×10⁸','3×10⁵')} = 0,5×10³ = <strong>500 secondes</strong> ≈ 8 min 20 s.`}
+    ]
+  },
+  {
+    theme:"Thalès — réciproque", pts:4,
+    context:`Sur la figure ci-dessous, les points A, O, D sont alignés et les points B, O, C sont alignés.<br>On donne : OA = 5 cm, OD = 10 cm, OB = 6 cm, OC = 12 cm.`,
+    figure: svgThalesSablier({OA:5,OB:6,OC:12,OD:10,lettres:['A','B','O','C','D']}),
+    questions:[
+      "Démontrer que les droites (AB) et (DC) sont parallèles.",
+      "Calculer AB sachant que DC = 14 cm.",
+      "Les triangles OAB et ODC sont-ils semblables ? Justifier.",
+      "L'aire du triangle ODC est 60 cm². Calculer l'aire du triangle OAB."
+    ],
+    correction:[
+      {q:"Question 1", r:`A, O, D sont alignés et B, O, C sont alignés. ${frac('OA','OD')} = ${frac(5,10)} = ${frac(1,2)} et ${frac('OB','OC')} = ${frac(6,12)} = ${frac(1,2)}. Ces rapports sont égaux. D'après la réciproque du théorème de Thalès, les droites (AB) et (DC) sont <strong>parallèles</strong>.`},
+      {q:"Question 2", r:`(AB) ∥ (DC). Par le théorème de Thalès : ${frac('OA','OD')} = ${frac('AB','DC')}, soit ${frac(1,2)} = ${frac('AB',14)}, donc AB = <strong>7 cm</strong>.`},
+      {q:"Question 3", r:`À la question 1, on a montré que ${frac('OA','OD')} = ${frac('OB','OC')} = ${frac(1,2)}. Ces rapports sont égaux et les angles en O sont communs (angles entre les mêmes droites sécantes). Donc les triangles OAB et ODC sont <strong>semblables</strong> de rapport ${frac(1,2)}.`},
+      {q:"Question 4", r:`Rapport des longueurs = ${frac(1,2)}, rapport des aires = (${frac(1,2)})² = ${frac(1,4)}. Aire OAB = ${frac(1,4)} × 60 = <strong>15 cm²</strong>.`}
+    ]
+  },
+  {
+    theme:"Calcul littéral & factorisation", pts:4,
+    questions:[
+      "Développer (3x + 2)².",
+      "Développer (3x + 2)(3x − 2).",
+      "En déduire la valeur exacte de 302² − 298² sans calculatrice.",
+      `Résoudre l'équation 5(7 − 2x) = 9 − 6x.`
+    ],
+    correction:[
+      {q:"Question 1", r:`(3x+2)² = 9x²+12x+4.`},
+      {q:"Question 2", r:`(3x+2)(3x−2) = 9x²−4 (identité a²−b²).`},
+      {q:"Question 3", r:`302²−298² = (302+298)(302−298) = 600×4 = <strong>2400</strong>.`},
+      {q:"Question 4", r:`35−10x = 9−6x → 35−9 = 10x−6x → 26 = 4x → x = <strong>6,5</strong>.`}
+    ]
+  },
+  {
+    theme:"Grandeurs composées", pts:4,
+    context:`Un automobiliste roule à 90 km/h. Il aperçoit un obstacle et met 1 seconde à commencer à freiner (temps de réaction).`,
+    questions:[
+      "Convertir 90 km/h en m/s.",
+      "Calculer la distance parcourue pendant le temps de réaction.",
+      "Après avoir freiné, il s'arrête en 40 m. Quelle est la distance totale d'arrêt ?",
+      "Sur l'autoroute, la limite est 130 km/h. Convertir cette vitesse en m/s et calculer la distance de réaction (1 seconde)."
+    ],
+    correction:[
+      {q:"Question 1", r:`90 km/h = ${frac('90000 m','3600 s')} = <strong>25 m/s</strong>.`},
+      {q:"Question 2", r:`d = v×t = 25×1 = <strong>25 m</strong>.`},
+      {q:"Question 3", r:`Distance totale = 25 + 40 = <strong>65 m</strong>.`},
+      {q:"Question 4", r:`130 km/h = ${frac('130000','3600')} ≈ 36,1 m/s. Distance réaction = <strong>36,1 m</strong>.`}
+    ]
+  }
+],
+
+// ══════════════════════════════════════════════════
+// SUJET 5
+// ══════════════════════════════════════════════════
+[
+  {
+    theme:"Fonctions — image et antécédent", pts:3,
+    context:`On considère les fonctions f : x ↦ 2x − 4 et g : x ↦ −x + 2.`,
+    questions:[
+      "Calculer f(3) et g(3).",
+      "Déterminer l'antécédent de 0 par f.",
+      "Déterminer l'antécédent de 0 par g.",
+      "Résoudre f(x) = g(x) et interpréter graphiquement le résultat."
+    ],
+    correction:[
+      {q:"Question 1", r:`f(3) = 2×3−4 = <strong>2</strong>. g(3) = −3+2 = <strong>−1</strong>.`},
+      {q:"Question 2", r:`2x−4=0 → 2x=4 → x=<strong>2</strong>. (Point d'intersection de (d_f) avec l'axe x)`},
+      {q:"Question 3", r:`−x+2=0 → x=<strong>2</strong>. (Même abscisse à l'origine !)`},
+      {q:"Question 4", r:`2x−4 = −x+2 → 3x = 6 → x=2 et f(2)=0. Les droites se croisent au point <strong>(2 ; 0)</strong>.`}
+    ]
+  },
+  {
+    theme:"Divisibilité & nombres premiers", pts:3,
+    questions:[
+      "Décomposer 360 en produit de facteurs premiers.",
+      "Décomposer 252 en produit de facteurs premiers.",
+      "En déduire le PGCD de 360 et 252.",
+      "Rendre irréductible la fraction 252/360."
+    ],
+    correction:[
+      {q:"Question 1", r:`360 = 2³×3²×5.`},
+      {q:"Question 2", r:`252 = 2²×3²×7.`},
+      {q:"Question 3", r:`PGCD = 2²×3² = 4×9 = <strong>36</strong>.`},
+      {q:"Question 4", r:`${frac(252,360)} = ${frac('252÷36','360÷36')} = <strong>${frac(7,10)}</strong>.`}
+    ]
+  },
+  {
+    theme:"Géométrie — Trigonométrie", pts:4,
+    context:`Un phare est situé au sommet d'une falaise. Un observateur en O, sur la plage, doit lever la tête de 35° pour voir le sommet H du phare. La base B de la falaise est à 120 m de O.`,
+    figure: `<div style="display:flex;justify-content:center;"><svg width="100%" viewBox="0 0 300 230" style="max-width:290px" role="img">
+  <title>Phare sur falaise</title>
+  <!-- Sol -->
+  <line x1="20" y1="195" x2="280" y2="195" stroke="var(--muted)" stroke-width="2"/>
+  <!-- Mur vertical BH -->
+  <line x1="220" y1="195" x2="220" y2="35" stroke="var(--muted)" stroke-width="2"/>
+  <!-- Angle droit en B -->
+  <polyline points="220,181 206,181 206,195" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+  <!-- Hypoténuse OH -->
+  <line x1="50" y1="195" x2="220" y2="35" stroke="var(--accent)" stroke-width="2"/>
+  <!-- Arc angle en O — bien à l'intérieur du triangle, loin des labels -->
+  <!--
+    O=(50,195), B=(220,195), H=(220,35)
+    Direction OB : angle 0° (horizontal)
+    Direction OH : atan2(35-195, 220-50) = atan2(-160,170) ≈ -43°
+    Arc de 0° à -43°, rayon=32
+    départ: (50+32, 195) = (82, 195)
+    arrivée: (50+32*cos(-43°), 195+32*sin(-43°)) = (50+23.4, 195-21.8) = (73.4, 173.2)
+  -->
+  <path d="M 82,195 A 32,32 0 0,0 73,173" fill="none" stroke="var(--orange)" stroke-width="1.5"/>
+  <!-- Points -->
+  <circle cx="50"  cy="195" r="3" fill="var(--text)"/>
+  <circle cx="220" cy="195" r="3" fill="var(--text)"/>
+  <circle cx="220" cy="35"  r="3" fill="var(--text)"/>
+  <!-- Labels sommets — hors des traits -->
+  <text x="36"  y="213" font-size="13" fill="var(--text)" font-weight="600" font-family="sans-serif">O</text>
+  <text x="228" y="213" font-size="13" fill="var(--text)" font-weight="600" font-family="sans-serif">B</text>
+  <text x="228" y="35"  font-size="13" fill="var(--text)" font-weight="600" font-family="sans-serif">H</text>
+  <!-- Mesures hors des traits -->
+  <text x="135" y="212" text-anchor="middle" font-size="11" fill="var(--accent)" font-family="sans-serif">OB = 120 m</text>
+  <text x="234" y="120" font-size="11" fill="var(--green)" font-family="sans-serif">h = ?</text>
+  <!-- Valeur de l'angle — à droite de l'arc, dans l'espace libre -->
+  <text x="88" y="187" font-size="11" fill="var(--orange)" font-family="sans-serif">35°</text>
+</svg></div>`,
+    questions:[
+      "Nommer le triangle représenté et identifier l'angle droit.",
+      "Calculer la hauteur BH = h. Arrondir au mètre.",
+      "Si la falaise mesure 50 m, quelle est la hauteur du phare seul ?",
+      "Un deuxième observateur est à 200 m de la base. De quel angle doit-il lever la tête pour voir le sommet H ? Arrondir au degré."
+    ],
+    correction:[
+      {q:"Question 1", r:`Triangle OBH rectangle en B (le mur est perpendiculaire au sol).`},
+      {q:"Question 2", r:`tan(${ang('H','O','B')}) = ${frac('BH','OB')}, soit tan(35°) = ${frac('h','120')}, donc h = 120 × tan(35°) ≈ 120 × 0,700 = <strong>84 m</strong>.`},
+      {q:"Question 3", r:`Hauteur phare seul = 84 − 50 = <strong>34 m</strong>.`},
+      {q:"Question 4", r:`tan(angle) = ${frac(84,200)} = 0,42, donc angle = arctan(0,42) ≈ <strong>23°</strong>.`}
+    ]
+  },
+  {
+    theme:"Probabilités & statistiques", pts:4,
+    context:`Un dé truqué a les probabilités suivantes : P(1)=0,1 ; P(2)=0,1 ; P(3)=0,2 ; P(4)=0,2 ; P(5)=0,2 ; P(6)=0,2.`,
+    questions:[
+      "Vérifier que la somme des probabilités est bien égale à 1.",
+      "Calculer la probabilité d'obtenir un nombre pair.",
+      "Calculer la probabilité d'obtenir un nombre supérieur ou égal à 4.",
+      "On lance ce dé 1 000 fois. Combien de fois environ obtiendra-t-on un 6 ?"
+    ],
+    correction:[
+      {q:"Question 1", r:`0,1+0,1+0,2+0,2+0,2+0,2 = <strong>1</strong>. ✓`},
+      {q:"Question 2", r:`P(pair) = P(2)+P(4)+P(6) = 0,1+0,2+0,2 = <strong>0,5</strong>.`},
+      {q:"Question 3", r:`P(≥4) = P(4)+P(5)+P(6) = 0,2+0,2+0,2 = <strong>0,6</strong>.`},
+      {q:"Question 4", r:`Fréquence attendue = 1000×0,2 = <strong>200 fois</strong>.`}
+    ]
+  }
+],
+
+// ══════════════════════════════════════════════════
+// SUJET 6
+// ══════════════════════════════════════════════════
+[
+  {
+    theme:"Calcul littéral — développement & factorisation", pts:3,
+    questions:[
+      "Développer et réduire (x − 4)(x + 3).",
+      "Factoriser x² − 16.",
+      "Vérifier que (x − 4)(x + 3) = x² − x − 12.",
+      "Résoudre (x − 4)(x + 3) = 0."
+    ],
+    correction:[
+      {q:"Question 1", r:`(x−4)(x+3) = x²+3x−4x−12 = <strong>x²−x−12</strong>.`},
+      {q:"Question 2", r:`x²−16 = x²−4² = <strong>(x+4)(x−4)</strong>.`},
+      {q:"Question 3", r:`(x−4)(x+3) = x²+3x−4x−12 = x²−x−12. ✓`},
+      {q:"Question 4", r:`x−4=0 → x=4 ; x+3=0 → x=−3. Solutions : <strong>x=4 ou x=−3</strong>.`}
+    ]
+  },
+  {
+    theme:"Fonctions affines — équation de droite", pts:3,
+    context:`Une droite (d) passe par les points A(0 ; 3) et B(2 ; 7).`,
+    questions:[
+      "Calculer le coefficient directeur de (d) en utilisant les coordonnées de A et B.",
+      "En déduire l'équation de (d).",
+      "La droite (d') a pour équation y = 2x + 3. Les droites (d) et (d') sont-elles parallèles ? Justifier.",
+      "Résoudre graphiquement ou algébriquement le système formé par (d) et (d')."
+    ],
+    correction:[
+      {q:"Question 1", r:`a = ${frac('7−3','2−0')} = ${frac(4,2)} = <strong>2</strong>.`},
+      {q:"Question 2", r:`y = 2x + b. A(0;3) → 3 = b. Équation : <strong>y = 2x + 3</strong>.`},
+      {q:"Question 3", r:`Les deux droites ont le même coefficient directeur 2 mais la même ordonnée à l'origine 3 → elles sont <strong>confondues</strong> (même droite !).`},
+      {q:"Question 4", r:`(d) et (d') sont la même droite → <strong>infinité de solutions</strong>.`}
+    ]
+  },
+  {
+    theme:"Proportionnalité — coefficient multiplicateur", pts:3,
+    questions:[
+      "Un prix augmente de 8%. Quel est le coefficient multiplicateur correspondant ?",
+      "Un article vaut 45 €. Après une hausse de 8% puis une remise de 10%, quel est le prix final ?",
+      "Le prix final est-il supérieur ou inférieur au prix initial ? Expliquer.",
+      "Quel taux de remise unique correspondrait à ces deux opérations successives ?"
+    ],
+    correction:[
+      {q:"Question 1", r:`Coefficient multiplicateur = 1+0,08 = <strong>1,08</strong>.`},
+      {q:"Question 2", r:`45×1,08×0,9 = 45×0,972 = <strong>43,74 €</strong>.`},
+      {q:"Question 3", r:`43,74 < 45 → prix final <strong>inférieur</strong> au prix initial (−2,8% au total).`},
+      {q:"Question 4", r:`Coefficient global = 1,08×0,9 = 0,972 → remise de <strong>2,8%</strong>.`}
+    ]
+  },
+  {
+    theme:"Géométrie — Aires & volumes", pts:5,
+    context:`Un solide est composé d'un cylindre de rayon 4 cm et hauteur 10 cm, surmonté d'une demi-sphère de même rayon.`,
+    figure: svgCylindreDemiSphere({r:'4 cm',h:'10 cm'}),
+    questions:[
+      "Calculer le volume du cylindre. (π ≈ 3,14)",
+      `Calculer le volume de la demi-sphère. (V sphère = ${frac(4,3)}πr³)`,
+      "Calculer le volume total du solide.",
+      "Le solide est creux et peut contenir un liquide. Si on le remplit au ${frac(3,4)}, quel volume de liquide contient-il ?"
+    ],
+    correction:[
+      {q:"Question 1", r:`V cylindre = 3,14×4²×10 = 3,14×160 = <strong>502,4 cm³</strong>.`},
+      {q:"Question 2", r:`V demi-sphère = ${frac(1,2)}×${frac(4,3)}×3,14×4³ = ${frac(2,3)}×3,14×64 = <strong>134,04 cm³</strong>.`},
+      {q:"Question 3", r:`V total = 502,4+134,04 = <strong>636,44 cm³</strong>.`},
+      {q:"Question 4", r:`${frac(3,4)}×636,44 = <strong>477,33 cm³</strong> ≈ 0,48 L.`}
+    ]
+  }
+],
+
+// ══════════════════════════════════════════════════
+// SUJET 7
+// ══════════════════════════════════════════════════
+[
+  {
+    theme:"Statistiques — étendue & histogramme", pts:3,
+    context:`Les résultats d'un test de vitesse (en km/h) pour 30 véhicules sont regroupés dans le tableau :<br>
+    <table style="border-collapse:collapse;margin:10px 0;font-size:.84rem;width:100%">
+      <tr style="background:var(--surface2)"><th style="border:1px solid var(--border);padding:5px 8px">Vitesse (km/h)</th><th style="border:1px solid var(--border);padding:5px 8px">[50;70[</th><th style="border:1px solid var(--border);padding:5px 8px">[70;90[</th><th style="border:1px solid var(--border);padding:5px 8px">[90;110[</th><th style="border:1px solid var(--border);padding:5px 8px">[110;130[</th></tr>
+      <tr><td style="border:1px solid var(--border);padding:5px 8px;text-align:center">Effectif</td><td style="border:1px solid var(--border);padding:5px 8px;text-align:center">4</td><td style="border:1px solid var(--border);padding:5px 8px;text-align:center">12</td><td style="border:1px solid var(--border);padding:5px 8px;text-align:center">10</td><td style="border:1px solid var(--border);padding:5px 8px;text-align:center">4</td></tr>
+    </table>`,
+    questions:[
+      "Vérifier que l'effectif total est 30.",
+      "Calculer la fréquence des véhicules roulant entre 70 et 90 km/h.",
+      "Calculer la fréquence des véhicules dépassant 90 km/h.",
+      "Quelle classe contient le plus d'effectifs ? Quelle est son centre de classe ?"
+    ],
+    correction:[
+      {q:"Question 1", r:`4+12+10+4 = <strong>30</strong>. ✓`},
+      {q:"Question 2", r:`f = ${frac(12,30)} = <strong>0,4 soit 40%</strong>.`},
+      {q:"Question 3", r:`Effectif >90 km/h = 10+4 = 14. f = ${frac(14,30)} ≈ <strong>46,7%</strong>.`},
+      {q:"Question 4", r:`Classe [70;90[ avec 12 véhicules. Centre = <strong>80 km/h</strong>.`}
+    ]
+  },
+  {
+    theme:"Calcul littéral — équations", pts:3,
+    context:`Deux amis, Théo et Léa, comparent leurs économies. Théo a 80 € et économise 15 € par mois. Léa a 20 € et économise 25 € par mois.`,
+    questions:[
+      "Exprimer en fonction du nombre de mois n la somme économisée par chacun.",
+      "Au bout de combien de mois auront-ils la même somme ?",
+      "Quelle somme auront-ils alors chacun ?",
+      "Développer et réduire (n + 4)² − (n − 4)²."
+    ],
+    correction:[
+      {q:"Question 1", r:`Théo : T(n) = 80+15n. Léa : L(n) = 20+25n.`},
+      {q:"Question 2", r:`80+15n = 20+25n → 60 = 10n → n = <strong>6 mois</strong>.`},
+      {q:"Question 3", r:`T(6) = 80+90 = <strong>170 €</strong> (vérif : L(6) = 20+150 = 170 ✓).`},
+      {q:"Question 4", r:`(n+4)²−(n−4)² = [(n+4)+(n−4)][(n+4)−(n−4)] = 2n×8 = <strong>16n</strong>.`}
+    ]
+  },
+  {
+    theme:"Pythagore — réciproque", pts:3,
+    questions:[
+      "Un triangle a des côtés mesurant 7 cm, 24 cm et 25 cm. Montrer qu'il est rectangle.",
+      "Calculer l'aire de ce triangle.",
+      "On construit un rectangle de longueur 24 cm et largeur 7 cm. Quelle est la longueur de sa diagonale ?",
+      "Un escalier a des marches de 17 cm de hauteur et 28 cm de profondeur. Calculer la longueur de la rampe le long d'une marche."
+    ],
+    correction:[
+      {q:"Question 1", r:`7²+24² = 49+576 = 625 = 25². Réciproque de Pythagore → <strong>rectangle</strong> ✓.`},
+      {q:"Question 2", r:`Aire = ${frac('7×24',2)} = <strong>84 cm²</strong>.`},
+      {q:"Question 3", r:`d² = 24²+7² = 576+49 = 625, d = <strong>25 cm</strong>.`},
+      {q:"Question 4", r:`Rampe² = 17²+28² = 289+784 = 1073. Rampe = √1073 ≈ <strong>32,8 cm</strong>.`}
+    ]
+  },
+  {
+    theme:"Fonctions — modélisation", pts:5,
+    context:`Un taxi A facture 2,50 € à la prise en charge puis 1,20 € par kilomètre parcouru. Un taxi B facture 0 € de prise en charge mais 1,50 € par km. Leurs tarifs sont représentés ci-dessous.`,
+    figure: `<div style="display:flex;justify-content:center;"><svg width="100%" viewBox="0 0 360 300" style="max-width:360px" role="img"><title>Fonctions coût taxi</title><line x1="60" y1="10" x2="60" y2="260" stroke="var(--border)" stroke-width="0.5"/><line x1="100" y1="10" x2="100" y2="260" stroke="var(--border)" stroke-width="0.5"/><line x1="140" y1="10" x2="140" y2="260" stroke="var(--border)" stroke-width="0.5"/><line x1="180" y1="10" x2="180" y2="260" stroke="var(--border)" stroke-width="0.5"/><line x1="220" y1="10" x2="220" y2="260" stroke="var(--border)" stroke-width="0.5"/><line x1="260" y1="10" x2="260" y2="260" stroke="var(--border)" stroke-width="0.5"/><line x1="300" y1="10" x2="300" y2="260" stroke="var(--border)" stroke-width="0.5"/><line x1="60" y1="260" x2="300" y2="260" stroke="var(--border)" stroke-width="0.5"/><line x1="60" y1="220" x2="300" y2="220" stroke="var(--border)" stroke-width="0.5"/><line x1="60" y1="180" x2="300" y2="180" stroke="var(--border)" stroke-width="0.5"/><line x1="60" y1="140" x2="300" y2="140" stroke="var(--border)" stroke-width="0.5"/><line x1="60" y1="100" x2="300" y2="100" stroke="var(--border)" stroke-width="0.5"/><line x1="60" y1="60" x2="300" y2="60" stroke="var(--border)" stroke-width="0.5"/><line x1="60" y1="260" x2="320" y2="260" stroke="var(--muted)" stroke-width="1.5"/><line x1="60" y1="260" x2="60" y2="10" stroke="var(--muted)" stroke-width="1.5"/><line x1="60" y1="257" x2="60" y2="263" stroke="var(--muted)" stroke-width="1"/><line x1="100" y1="257" x2="100" y2="263" stroke="var(--muted)" stroke-width="1"/><text x="100" y="274" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="sans-serif">5</text><line x1="140" y1="257" x2="140" y2="263" stroke="var(--muted)" stroke-width="1"/><text x="140" y="274" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="sans-serif">10</text><line x1="180" y1="257" x2="180" y2="263" stroke="var(--muted)" stroke-width="1"/><text x="180" y="274" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="sans-serif">15</text><line x1="220" y1="257" x2="220" y2="263" stroke="var(--muted)" stroke-width="1"/><text x="220" y="274" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="sans-serif">20</text><line x1="260" y1="257" x2="260" y2="263" stroke="var(--muted)" stroke-width="1"/><text x="260" y="274" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="sans-serif">25</text><line x1="300" y1="257" x2="300" y2="263" stroke="var(--muted)" stroke-width="1"/><text x="300" y="274" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="sans-serif">30</text><line x1="57" y1="260" x2="63" y2="260" stroke="var(--muted)" stroke-width="1"/><line x1="57" y1="220" x2="63" y2="220" stroke="var(--muted)" stroke-width="1"/><text x="54" y="224" text-anchor="end" font-size="10" fill="var(--muted)" font-family="sans-serif">10</text><line x1="57" y1="180" x2="63" y2="180" stroke="var(--muted)" stroke-width="1"/><text x="54" y="184" text-anchor="end" font-size="10" fill="var(--muted)" font-family="sans-serif">20</text><line x1="57" y1="140" x2="63" y2="140" stroke="var(--muted)" stroke-width="1"/><text x="54" y="144" text-anchor="end" font-size="10" fill="var(--muted)" font-family="sans-serif">30</text><line x1="57" y1="100" x2="63" y2="100" stroke="var(--muted)" stroke-width="1"/><text x="54" y="104" text-anchor="end" font-size="10" fill="var(--muted)" font-family="sans-serif">40</text><line x1="57" y1="60" x2="63" y2="60" stroke="var(--muted)" stroke-width="1"/><text x="54" y="64" text-anchor="end" font-size="10" fill="var(--muted)" font-family="sans-serif">50</text><text x="54" y="264" text-anchor="end" font-size="10" fill="var(--muted)" font-family="sans-serif">O</text><text x="322" y="264" font-size="10" fill="var(--muted)" font-family="sans-serif">x</text><text x="64" y="14" font-size="10" fill="var(--muted)" font-family="sans-serif">C</text><line x1="60" y1="250.0" x2="300" y2="106.0" stroke="#4f8cff" stroke-width="2"/><text x="304" y="110.0" font-size="11" fill="#4f8cff" font-family="sans-serif" font-weight="600">(dₐ)</text><line x1="60" y1="260" x2="300" y2="80" stroke="#e06c3a" stroke-width="2"/><text x="304" y="84" font-size="11" fill="#e06c3a" font-family="sans-serif" font-weight="600">(d_b)</text><circle cx="126.6" cy="210.0" r="4" fill="var(--green)"/><text x="132.6" y="206.0" font-size="10" fill="var(--green)" font-family="sans-serif">≈(8,3 ; 12,5)</text><rect x="70" y="20" width="14" height="3" fill="#4f8cff"/><text x="88" y="25" font-size="10" fill="#4f8cff" font-family="sans-serif">Taxi A : C=1,2x+2,5</text><rect x="70" y="34" width="14" height="3" fill="#e06c3a"/><text x="88" y="39" font-size="10" fill="#e06c3a" font-family="sans-serif">Taxi B : C=1,5x</text></svg></div>`,
+    questions:[
+      "Exprimer le coût C (en €) en fonction du nombre de kilomètres parcourus x.",
+      "Calculer le coût pour un trajet de 15 km.",
+      "Un concurrent facture 0 € à la prise en charge mais 1,50 € par km. Déterminer à partir de quelle distance le taxi initial est moins cher.",
+      "Lire graphiquement ci-dessus les coordonnées du point d'intersection des deux droites et interpréter."
+    ],
+    correction:[
+      {q:"Question 1", r:`C(x) = 1,20x + 2,50.`},
+      {q:"Question 2", r:`C(15) = 1,20×15+2,50 = 18+2,50 = <strong>20,50 €</strong>.`},
+      {q:"Question 3", r:`1,20x+2,50 < 1,50x → 2,50 < 0,30x → x > 8,33. Le taxi A est moins cher au-delà de <strong>8,34 km</strong>.`},
+      {q:"Question 4", r:`C_A(0)=2,5 ; C_A(30)=38,5. C_B(0)=0 ; C_B(30)=45. Intersection à x≈8,33.`}
+    ]
+  }
+],
+
+// ══════════════════════════════════════════════════
+// SUJET 8
+// ══════════════════════════════════════════════════
+[
+  {
+    theme:"Probabilités & dénombrement", pts:3,
+    context:`Dans une classe de 30 élèves, 18 pratiquent un sport, 14 jouent d'un instrument et 6 font les deux. Le tableau ci-dessous résume la situation :<div style="margin:14px 0;overflow-x:auto;"><table style="border-collapse:collapse;font-size:.82rem;font-family:sans-serif;width:auto"><tr><th style="border:1px solid var(--border);padding:7px 14px;background:var(--surface2);color:var(--muted)"></th><th style="border:1px solid var(--border);padding:7px 14px;background:var(--surface2);color:var(--text)">Instrument</th><th style="border:1px solid var(--border);padding:7px 14px;background:var(--surface2);color:var(--text)">Pas d'instrument</th><th style="border:1px solid var(--border);padding:7px 14px;background:var(--surface2);color:var(--text)">Total</th></tr><tr><th style="border:1px solid var(--border);padding:7px 14px;background:var(--surface2);color:var(--text)">Sport</th><td style="border:1px solid var(--border);padding:7px 14px;text-align:center;background:var(--bg)">6</td><td style="border:1px solid var(--border);padding:7px 14px;text-align:center;background:var(--bg)">12</td><td style="border:1px solid var(--border);padding:7px 14px;text-align:center;background:var(--bg);font-weight:600">18</td></tr><tr><th style="border:1px solid var(--border);padding:7px 14px;background:var(--surface2);color:var(--text)">Pas de sport</th><td style="border:1px solid var(--border);padding:7px 14px;text-align:center;background:var(--bg)">8</td><td style="border:1px solid var(--border);padding:7px 14px;text-align:center;background:var(--bg)">4</td><td style="border:1px solid var(--border);padding:7px 14px;text-align:center;background:var(--bg);font-weight:600">12</td></tr><tr><th style="border:1px solid var(--border);padding:7px 14px;background:var(--surface2);color:var(--text)">Total</th><td style="border:1px solid var(--border);padding:7px 14px;text-align:center;background:var(--surface2)">14</td><td style="border:1px solid var(--border);padding:7px 14px;text-align:center;background:var(--surface2)">16</td><td style="border:1px solid var(--border);padding:7px 14px;text-align:center;background:var(--surface2);font-weight:600">30</td></tr></table></div>`,
+    questions:[
+      "Vérifier que le total des élèves est bien 30.",
+      "Calculer le nombre d'élèves qui ne pratiquent ni sport ni instrument.",
+      "Un élève est choisi au hasard. Quelle est la probabilité qu'il pratique un sport mais pas d'instrument ?",
+      "Quelle est la probabilité qu'il pratique au moins une des deux activités ?"
+    ],
+    correction:[
+      {q:"Question 1", r:`Sport seul : 18−6=12. Instrument seul : 14−6=8. Les deux : 6. Ni l'un ni l'autre : 30−12−8−6=4.`},
+      {q:"Question 2", r:`<strong>4 élèves</strong> ne pratiquent ni sport ni instrument.`},
+      {q:"Question 3", r:`P(sport seul) = ${frac(12,30)} = <strong>${frac(2,5)}</strong>.`},
+      {q:"Question 4", r:`P(au moins une) = ${frac(26,30)} = <strong>${frac(13,15)}</strong>.`}
+    ]
+  },
+  {
+    theme:"Calcul littéral — équations du second degré", pts:3,
+    questions:[
+      "Résoudre x² = 81.",
+      "Résoudre (2x − 3)² = 25.",
+      "Vérifier les solutions de la question 2.",
+      "Résoudre l'équation x² − 7x = 0 en factorisant."
+    ],
+    correction:[
+      {q:"Question 1", r:`x=√81=9 ou x=−9. Solutions : <strong>x=9 ou x=−9</strong>.`},
+      {q:"Question 2", r:`2x−3=5 → x=4 ; 2x−3=−5 → x=−1. Solutions : <strong>x=4 ou x=−1</strong>.`},
+      {q:"Question 3", r:`(2×4−3)²=(5)²=25 ✓ ; (2×(−1)−3)²=(−5)²=25 ✓.`},
+      {q:"Question 4", r:`x(x−7)=0 → x=0 ou x=7. Solutions : <strong>x=0 ou x=7</strong>.`}
+    ]
+  },
+  {
+    theme:"Thalès — application", pts:4,
+    context:`Le soleil en S éclaire un panneau AP = 1,8 m dont l'ombre AB = 2,4 m, et un arbre CT dont l'ombre CD = 8 m. Les rayons du soleil sont parallèles entre eux.`,
+    figure: `<div style="display:flex;justify-content:center;"><svg width="100%" viewBox="0 0 440 220" style="max-width:440px" role="img">
+  <title>Ombres — configuration de Thalès</title>
+  <!-- Sol -->
+  <line x1="20" y1="185" x2="420" y2="185" stroke="var(--muted)" stroke-width="2"/>
+  <!-- Panneau AP -->
+  <line x1="140" y1="185" x2="140" y2="95" stroke="var(--accent)" stroke-width="2.5"/>
+  <circle cx="140" cy="185" r="3" fill="var(--text)"/>
+  <circle cx="140" cy="95"  r="3" fill="var(--accent)"/>
+  <text x="116" y="145" text-anchor="end" font-size="11" fill="var(--accent)" font-family="sans-serif">AP = 1,8 m</text>
+  <!-- Ombre panneau AB -->
+  <line x1="140" y1="185" x2="210" y2="185" stroke="var(--accent)" stroke-width="2.5"/>
+  <text x="175" y="200" text-anchor="middle" font-size="11" fill="var(--accent)" font-family="sans-serif">AB = 2,4 m</text>
+  <!-- Arbre CT -->
+  <line x1="290" y1="185" x2="290" y2="45" stroke="var(--green)" stroke-width="2.5"/>
+  <circle cx="290" cy="185" r="3" fill="var(--text)"/>
+  <circle cx="290" cy="45"  r="3" fill="var(--green)"/>
+  <text x="304" y="120" font-size="11" fill="var(--green)" font-family="sans-serif">CT = ?</text>
+  <!-- Ombre arbre CD -->
+  <line x1="290" y1="185" x2="410" y2="185" stroke="var(--green)" stroke-width="2.5"/>
+  <text x="350" y="200" text-anchor="middle" font-size="11" fill="var(--green)" font-family="sans-serif">CD = 8 m</text>
+  <!-- Labels points -->
+  <text x="140" y="215" text-anchor="middle" font-size="12" fill="var(--text)" font-weight="600" font-family="sans-serif">A</text>
+  <text x="210" y="215" text-anchor="middle" font-size="12" fill="var(--text)" font-weight="600" font-family="sans-serif">B</text>
+  <text x="290" y="215" text-anchor="middle" font-size="12" fill="var(--text)" font-weight="600" font-family="sans-serif">C</text>
+  <text x="410" y="215" text-anchor="middle" font-size="12" fill="var(--text)" font-weight="600" font-family="sans-serif">D</text>
+  <text x="128" y="93"  text-anchor="end" font-size="12" fill="var(--accent)" font-weight="600" font-family="sans-serif">P</text>
+  <text x="300" y="43"  font-size="12" fill="var(--green)" font-weight="600" font-family="sans-serif">T</text>
+</svg></div>`,
+    questions:[
+      "Justifier que la configuration permet d'appliquer le théorème de Thalès.",
+      "Calculer la hauteur CT de l'arbre.",
+      "Vérifier le résultat obtenu.",
+      "Un troisième objet projette une ombre de 3,6 m au même moment. Calculer sa hauteur."
+    ],
+    correction:[
+      {q:"Question 1", r:`Les rayons du soleil sont parallèles et coupent les droites (SA) et (SC) qui se croisent en S. D'après le théorème de Thalès, les droites (AP) et (CT) sont parallèles car AP ⊥ sol et CT ⊥ sol. Les conditions sont réunies.`},
+      {q:"Question 2", r:`Par Thalès : ${frac('AP','AB')} = ${frac('CT','CD')}, soit ${frac('1,8','2,4')} = ${frac('CT','8')}, donc CT = ${frac('1,8×8','2,4')} = <strong>6 m</strong>.`},
+      {q:"Question 3", r:`${frac('AP','CT')} = ${frac('1,8','6')} = 0,3 et ${frac('AB','CD')} = ${frac('2,4','8')} = 0,3. Les rapports sont égaux ✓.`},
+      {q:"Question 4", r:`${frac('1,8','h')} = ${frac('2,4','3,6')}, donc h = ${frac('1,8×3,6','2,4')} = <strong>2,7 m</strong>.`}
+    ]
+  },
+  {
+    theme:"Fonctions — représentation graphique", pts:4,
+    figure: svgRepere({ox:200,oy:200,u:40,W:420,H:340,xmin:-2,xmax:3,ymin:-3,ymax:5,
+      droites:[
+        {x1:-2,y1:-3,x2:1.67,y2:5,color:'#4f8cff',label:'(d₁)'},
+        {x1:-0.5,y1:-3,x2:2,y2:4,color:'#e06c3a',label:'(d₂)'}
+      ]}),
+    questions:[
+      "Lire les coordonnées du point d'intersection des deux droites.",
+      "Lire l'ordonnée à l'origine de chaque droite.",
+      "Déterminer le coefficient directeur de (d₁) à partir de deux points à coordonnées entières.",
+      "La droite (d₂) passe par O(0;0). De quelle type de fonction est-elle la représentation ?"
+    ],
+    correction:[
+      {q:"Question 1", r:`Intersection : <strong>(1 ; 2)</strong> (lecture graphique).`},
+      {q:"Question 2", r:`(d₁) : ordonnée à l'origine = <strong>1</strong>. (d₂) : ordonnée à l'origine = <strong>0</strong>.`},
+      {q:"Question 3", r:`Points entiers sur (d₁) : (0;1) et (1;3). a = ${frac('3−1','1−0')} = <strong>2</strong>.`},
+      {q:"Question 4", r:`(d₂) passe par O → représentation d'une <strong>fonction linéaire</strong> (proportionnalité).`}
+    ]
+  }
+],
+
+// ══════════════════════════════════════════════════
+// SUJET 9
+// ══════════════════════════════════════════════════
+[
+  {
+    theme:"Nombres — racines carrées & puissances", pts:3,
+    questions:[
+      "Calculer la valeur exacte du côté d'un carré dont l'aire est 75 cm².",
+      "Simplifier √75 (écrire sous la forme a√b avec b le plus petit possible).",
+      "Donner une valeur approchée au millimètre.",
+      "Calculer 3⁴ × (3⁻²). Exprimer le résultat sous la forme 3ⁿ."
+    ],
+    correction:[
+      {q:"Question 1", r:`Côté = √75 cm.`},
+      {q:"Question 2", r:`√75 = √(25×3) = 5√3.`},
+      {q:"Question 3", r:`5√3 ≈ 5×1,732 ≈ 8,660 cm, soit <strong>8,66 cm</strong>.`},
+      {q:"Question 4", r:`3⁴×3⁻² = 3^(4−2) = <strong>3² = 9</strong>.`}
+    ]
+  },
+  {
+    theme:"Fonctions — modélisation", pts:4,
+    context:`Un téléphone portable est vendu 650 €. Il perd 15% de sa valeur chaque année.`,
+    questions:[
+      "Quel est le coefficient multiplicateur correspondant à une perte de 15% ?",
+      "Calculer la valeur du téléphone après 1 an, puis après 2 ans.",
+      "Exprimer la valeur du téléphone après n années.",
+      "Au bout de combien d'années la valeur sera-t-elle inférieure à 200 € ? (Utiliser des calculs successifs)"
+    ],
+    correction:[
+      {q:"Question 1", r:`Coefficient = 1−0,15 = <strong>0,85</strong>.`},
+      {q:"Question 2", r:`Après 1 an : 650×0,85 = 552,50 €. Après 2 ans : 552,50×0,85 ≈ <strong>469,63 €</strong>.`},
+      {q:"Question 3", r:`V(n) = 650×(0,85)ⁿ.`},
+      {q:"Question 4", r:`n=1: 552,5 ; n=2: 469,6 ; n=3: 399,2 ; n=4: 339,3 ; n=5: 288,4 ; n=6: 245,1 ; n=7: 208,3 ; <strong>n=8: 177,1 < 200</strong> → au bout de <strong>8 ans</strong>.`}
+    ]
+  },
+  {
+    theme:"Géométrie plane — démonstration", pts:4,
+    context:`ABCD est un carré de côté 9 cm. Les milieux des côtés [AB], [BC], [CD] et [DA] sont notés respectivement E, F, G, H.`,
+    questions:[
+      "Calculer la longueur EF.",
+      "Montrer que EFGH est un carré.",
+      "Calculer l'aire de EFGH.",
+      "Quel est le rapport entre l'aire de EFGH et l'aire de ABCD ?"
+    ],
+    correction:[
+      {q:"Question 1", r:`E milieu AB, F milieu BC. Triangle EBF rectangle en B, EB=BF=4,5 cm. EF²=4,5²+4,5²=40,5. EF=√40,5≈<strong>6,36 cm</strong> ou EF = ${frac('9√2',2)}.`},
+      {q:"Question 2", r:`Tous les côtés sont égaux (même calcul pour chaque côté) et les angles sont droits (triangles rectangles isocèles) → EFGH est un <strong>carré</strong>.`},
+      {q:"Question 3", r:`Aire EFGH = EF² = 40,5 = <strong>40,5 cm²</strong>.`},
+      {q:"Question 4", r:`Rapport = ${frac(40.5,81)} = <strong>${frac(1,2)}</strong>. EFGH a une aire deux fois plus petite que ABCD.`}
+    ]
+  },
+  {
+    theme:"Probabilités & calcul", pts:3,
+    context:`Une urne contient 4 boules rouges, 3 boules vertes et 2 boules bleues.`,
+    questions:[
+      "Calculer la probabilité de tirer une boule rouge.",
+      "On tire deux boules successivement sans remise. Calculer la probabilité d'obtenir deux boules rouges.",
+      "Calculer la probabilité que la deuxième boule tirée soit rouge, sachant que la première était verte.",
+      "Comparer ce résultat avec la probabilité de tirer une rouge au premier tirage."
+    ],
+    correction:[
+      {q:"Question 1", r:`P(R) = ${frac(4,9)}.`},
+      {q:"Question 2", r:`P(RR) = ${frac(4,9)}×${frac(3,8)} = ${frac(12,72)} = <strong>${frac(1,6)}</strong>.`},
+      {q:"Question 3", r:`Après tirage vert, il reste 4 rouges sur 8 boules. P(R|V) = ${frac(4,8)} = <strong>${frac(1,2)}</strong>.`},
+      {q:"Question 4", r:`P(R) = 4/9 ≈ 0,44 < P(R|V) = 1/2 = 0,5. Le tirage sans remise <strong>modifie</strong> les probabilités.`}
+    ]
+  }
+],
+
+// ══════════════════════════════════════════════════
+// SUJET 10
+// ══════════════════════════════════════════════════
+[
+  {
+    theme:"Calcul littéral — programme de calcul", pts:3,
+    context:`On donne un programme de calcul : choisir un nombre x ; le multiplier par 2 ; soustraire 3 ; élever le résultat au carré ; afficher le résultat.`,
+    questions:[
+      "Vérifier que pour x = 4, le programme affiche 25.",
+      "Exprimer en fonction de x le résultat du programme.",
+      "Parmi les expressions A = (2x−3)², B = 4x²−9, C = (2x−3)(2x+3), laquelle correspond au programme ?",
+      "Résoudre (2x − 3)² = 49."
+    ],
+    correction:[
+      {q:"Question 1", r:`2×4−3=5 ; 5²=25. ✓`},
+      {q:"Question 2", r:`Résultat = (2x−3)².`},
+      {q:"Question 3", r:`L'expression <strong>A = (2x−3)²</strong> correspond au programme.`},
+      {q:"Question 4", r:`2x−3=7 → x=5 ; 2x−3=−7 → x=−2. Solutions : <strong>x=5 ou x=−2</strong>.`}
+    ]
+  },
+  {
+    theme:"Fonctions affines — interprétation", pts:3,
+    context:`Un chauffagiste facture ses interventions selon le tarif : 45 € de déplacement + 35 € par heure de travail.`,
+    questions:[
+      "Exprimer le coût C (en €) en fonction de la durée d'intervention t (en heures).",
+      "Calculer le coût pour 3 heures de travail.",
+      "Un concurrent propose 0 € de déplacement mais 55 € par heure. À partir de combien d'heures le premier est-il moins cher ?",
+      "Quel est le coefficient directeur de la fonction C et quelle est sa signification concrète ?"
+    ],
+    correction:[
+      {q:"Question 1", r:`C(t) = 35t + 45.`},
+      {q:"Question 2", r:`C(3) = 35×3+45 = 105+45 = <strong>150 €</strong>.`},
+      {q:"Question 3", r:`35t+45 < 55t → 45 < 20t → t > 2,25. Le premier est moins cher à partir de <strong>2h15</strong>.`},
+      {q:"Question 4", r:`Coefficient directeur = <strong>35</strong> : le chauffagiste facture 35 € par heure supplémentaire.`}
+    ]
+  },
+  {
+    theme:"Thalès — démonstration", pts:4,
+    context:`Sur la figure ci-dessous, les points A, D, B sont alignés et les points A, E, C sont alignés.<br>On donne : AD = 6 cm, DB = 3 cm, AE = 8 cm, EC = 4 cm.`,
+    figure: svgThalesEmboite({letts:['A','B','C','D','E'],AD:6,DB:3,AE:8,EC:4}),
+    questions:[
+      "Démontrer que les droites (DE) et (BC) sont parallèles.",
+      "Calculer la longueur DE sachant que BC = 15 cm.",
+      "Les triangles ADE et ABC sont-ils semblables ? Justifier et donner le rapport de similitude.",
+      "L'aire du triangle ABC est 67,5 cm². Calculer l'aire du triangle ADE."
+    ],
+    correction:[
+      {q:"Question 1", r:`AB = AD+DB = 6+3 = 9 et AC = AE+EC = 8+4 = 12. ${frac('AD','AB')} = ${frac(6,9)} = ${frac(2,3)} et ${frac('AE','AC')} = ${frac(8,12)} = ${frac(2,3)}. Ces rapports sont égaux, D ∈ [AB] et E ∈ [AC]. D'après la réciproque du théorème de Thalès, (DE) ∥ (BC).`},
+      {q:"Question 2", r:`(DE) ∥ (BC), D ∈ [AB], E ∈ [AC]. Par le théorème de Thalès : ${frac('AD','AB')} = ${frac('DE','BC')}, soit DE = ${frac(2,3)} × 15 = <strong>10 cm</strong>.`},
+      {q:"Question 3", r:`Angle en A commun. ${frac('AD','AB')} = ${frac('AE','AC')} = ${frac(2,3)}. Les triangles ADE et ABC sont <strong>semblables</strong> de rapport ${frac(2,3)}.`},
+      {q:"Question 4", r:`Rapport des aires = (${frac(2,3)})² = ${frac(4,9)}. Aire ADE = ${frac(4,9)} × 67,5 = <strong>30 cm²</strong>.`}
+    ]
+  },
+  {
+    theme:"Grandeurs & mesures — vitesse & débit", pts:4,
+    context:`Le débit d'un fleuve est de 450 m³/s. Un barrage retient l'eau dans un lac artificiel de 2 km de long, 500 m de large et 30 m de profondeur en moyenne.`,
+    questions:[
+      "Calculer le volume du lac artificiel en m³.",
+      "Calculer le volume du lac en km³.",
+      "Combien de temps (en heures) faudrait-il pour remplir ce lac avec le débit du fleuve ?",
+      "En supposant que le barrage libère 200 m³/s, quel est le débit net entrant dans le lac ?"
+    ],
+    correction:[
+      {q:"Question 1", r:`V = 2000×500×30 = <strong>30 000 000 m³ = 3×10⁷ m³</strong>.`},
+      {q:"Question 2", r:`1 km³ = 10⁹ m³. V = 3×10⁷ m³ = <strong>0,03 km³</strong>.`},
+      {q:"Question 3", r:`t = ${frac('3×10⁷','450')} = 66 667 s ≈ <strong>18,5 heures</strong>.`},
+      {q:"Question 4", r:`Débit net = 450−200 = <strong>250 m³/s</strong>.`}
+    ]
+  }
+]
+
+]; // fin SUJETS
+
+// ═══════════════════════════════════════════════════
+// THÈMES pour l'entraînement
+// ═══════════════════════════════════════════════════
+const THEMES=[
+  "Tous les thèmes",
+  "Statistiques & probabilités",
+  "Calcul littéral & équations",
+  "Fonctions",
+  "Géométrie — Pythagore & trigo",
+  "Thalès",
+  "Proportionnalité & pourcentages",
+  "Grandeurs & mesures",
+  "Nombres — puissances & racines"
+];
+
+// ═══════════════════════════════════════════════════
+// ÉTAT
+// ═══════════════════════════════════════════════════
+let mode='training', selectedTheme='Tous les thèmes';
+let sessionExos=[], currentExoIdx=0;
+let timerInterval=null, timerSeconds=6000;
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+function initThemeGrid(){
+  const g=document.getElementById('theme-grid');
+  g.innerHTML='';
+  THEMES.forEach(t=>{
+    const c=document.createElement('div');
+    c.className='tchip'+(t===selectedTheme?' active':'');
+    c.textContent=t;
+    c.onclick=()=>{ document.querySelectorAll('.tchip').forEach(x=>x.classList.remove('active')); c.classList.add('active'); selectedTheme=t; };
+    g.appendChild(c);
+  });
+}
+
+function selectMode(m){
+  mode=m;
+  document.getElementById('card-train').classList.toggle('sel',m==='training');
+  document.getElementById('card-exam').classList.toggle('sel',m==='exam');
+  document.getElementById('theme-section').classList.toggle('hidden',m==='exam');
+  document.getElementById('start-btn').className=m==='exam'?'btn btn-exam':'btn btn-primary';
+}
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+function startSession(){
+  if(mode==='exam'){
+    // Choisir un sujet complet aléatoire
+    const sujet=SUJETS[Math.floor(Math.random()*SUJETS.length)];
+    sessionExos=[...sujet];
+    timerSeconds=6000;
+    startTimer();
+  } else {
+    // Entraînement : collecter tous les exos du thème choisi
+    let pool=[];
+    SUJETS.forEach(s=>s.forEach(e=>{
+      if(selectedTheme==='Tous les thèmes'||e.theme.toLowerCase().includes(selectedTheme.split('—')[0].trim().toLowerCase())||selectedTheme.toLowerCase().includes(e.theme.split('—')[0].trim().toLowerCase())){
+        pool.push(e);
+      }
+    }));
+    if(!pool.length){alert('Aucun exercice pour ce thème.');return;}
+    sessionExos=[shuffle(pool)[0]]; // 1 exercice à la fois
+  }
+  currentExoIdx=0;
+  showScreen('screen-exo');
+  renderExo();
+}
+
+// ═══════════════════════════════════════════════════
+// TIMER
+// ═══════════════════════════════════════════════════
+function startTimer(){
+  clearInterval(timerInterval);
+  timerInterval=setInterval(()=>{
+    timerSeconds--;
+    updateTimerDisplay();
+    if(timerSeconds<=0){clearInterval(timerInterval);finishExam();}
+  },1000);
+}
+function updateTimerDisplay(){
+  const h=Math.floor(timerSeconds/3600);
+  const m=Math.floor((timerSeconds%3600)/60);
+  const s=timerSeconds%60;
+  const disp=h>0?`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`:`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  document.getElementById('timer-disp').textContent=disp;
+  const box=document.getElementById('timer-box');
+  box.classList.remove('warn','danger');
+  if(timerSeconds<=300) box.classList.add('danger');
+  else if(timerSeconds<=600) box.classList.add('warn');
+}
+
+// ═══════════════════════════════════════════════════
+// RENDU EXERCICE
+// ═══════════════════════════════════════════════════
+function renderExo(){
+  const total=sessionExos.length;
+
+  if(mode==='exam'){
+    // ── MODE EXAMEN : tous les exercices visibles d'un coup ──
+    document.getElementById('exo-ctr').textContent='Épreuve complète';
+    document.getElementById('exo-badge').textContent=`${total} exercices`;
+    document.getElementById('prog-fill').style.width='100%';
+    document.getElementById('timer-box').style.display='flex';
+    document.getElementById('btn-next').style.display='none';
+    document.getElementById('btn-finish').style.display='inline-flex';
+    document.getElementById('btn-finish').textContent='Terminer l\'épreuve →';
+
+    // Bandeau info
+    let html=`<div style="background:var(--surface2);border:1.5px solid var(--accent2);border-radius:10px;padding:12px 18px;margin-bottom:20px;font-size:.82rem;color:var(--muted);display:flex;align-items:flex-start;gap:9px;">
+      <span>🔒</span>
+      <span><strong style="color:var(--accent2)">Épreuve DNB — 1h40</strong><br>Fais défiler pour voir tous les exercices. Travaille sur brouillon. La correction s'affiche à la fin.</span>
+    </div>`;
+
+    // Liens de navigation rapide
+    html+=`<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">`;
+    sessionExos.forEach((e,i)=>{
+      html+=`<a href="#exo-anchor-${i}" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:6px 14px;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:600;color:var(--muted);text-decoration:none;transition:all .18s;" onmouseover="this.style.borderColor='var(--accent2)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">Exercice ${i+1} — ${e.pts} pts</a>`;
+    });
+    html+=`</div>`;
+
+    // Tous les exercices sans correction
+    sessionExos.forEach((exo,idx)=>{
+      html+=`<div class="exo-card" id="exo-anchor-${idx}" style="scroll-margin-top:80px;">
+        <div class="exo-title-row">
+          <span class="exo-num">Exercice ${idx+1}</span>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <span class="exo-theme-badge">${exo.theme}</span>
+            <span class="exo-pts-badge">${exo.pts} points</span>
+          </div>
+        </div>`;
+      if(exo.context) html+=`<div class="exo-context">${exo.context}</div>`;
+      if(exo.figure)  html+=`<div style="margin:14px 0;display:flex;justify-content:center;">${exo.figure}</div>`;
+      html+=`<div class="exo-body">`;
+      exo.questions.forEach((q,i)=>{ html+=`<div class="exo-q"><span class="exo-qn">${i+1}.</span><span>${q}</span></div>`; });
+      html+=`</div></div>`;
+    });
+
+
+
+    document.getElementById('exo-render').innerHTML=html;
+
+  } else {
+    // ── MODE ENTRAÎNEMENT : un exercice à la fois ──
+    const exo=sessionExos[currentExoIdx];
+    document.getElementById('exo-ctr').textContent=`Exercice ${currentExoIdx+1} / ${total}`;
+    document.getElementById('exo-badge').textContent=exo.theme;
+    document.getElementById('prog-fill').style.width=`${(currentExoIdx/total)*100}%`;
+    document.getElementById('timer-box').style.display='none';
+
+    let html=`<div class="exo-card">
+      <div class="exo-title-row">
+        <span class="exo-num">Exercice</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="exo-theme-badge">${exo.theme}</span>
+          <span class="exo-pts-badge">${exo.pts} points</span>
+        </div>
+      </div>`;
+    if(exo.context) html+=`<div class="exo-context">${exo.context}</div>`;
+    if(exo.figure)  html+=`<div style="margin:14px 0;display:flex;justify-content:center;">${exo.figure}</div>`;
+    html+=`<div class="exo-body">`;
+    exo.questions.forEach((q,i)=>{ html+=`<div class="exo-q"><span class="exo-qn">${i+1}.</span><span>${q}</span></div>`; });
+    html+=`</div>
+    <div style="border:none;border-top:0.5px solid var(--border);margin:14px 0;"></div>
+    <button class="corr-btn" onclick="this.nextElementSibling.classList.toggle('show');this.textContent=this.nextElementSibling.classList.contains('show')?'Masquer la correction':'Voir la correction'">Voir la correction</button>
+    <div class="corr-box">`;
+    exo.correction.forEach(c=>{ html+=`<div class="cq"><div class="cql">${c.q}</div>${c.r}</div>`; });
+    html+=`</div></div>`;
+    document.getElementById('exo-render').innerHTML=html;
+
+    document.getElementById('btn-next').style.display='none';
+    document.getElementById('btn-finish').style.display='inline-flex';
+    document.getElementById('btn-finish').textContent='Accueil';
+  }
+}
+
+function nextExo(){
+  if(currentExoIdx<sessionExos.length-1){currentExoIdx++;renderExo();}
+}
+
+function tryFinish(){
+  if(mode==='exam'){
+    document.getElementById('modal').classList.add('show');
+  } else {
+    finishExam();
+  }
+}
+
+function confirmFinish(){
+  closeModal();
+  finishExam();
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('show');
+}
+
+function finishExam(){
+  clearInterval(timerInterval);
+  if(mode==='exam'){
+    showExamResults();
+  } else {
+    goHome();
+  }
+}
+
+function showExamResults(){
+  clearInterval(timerInterval);
+  const total=sessionExos.reduce((s,e)=>s+e.pts,0);
+  // En mode examen, l'élève s'autocorrige → on affiche tous les exercices avec correction
+  // Score non calculé (autocorrection)
+  const circ=376.99;
+  document.getElementById('ring-fill').style.strokeDashoffset=circ/2;
+  document.getElementById('ring-fill').style.stroke='var(--accent)';
+  document.getElementById('score-num').textContent='?';
+  document.getElementById('score-den').textContent=`/ ${total} pts`;
+  document.getElementById('res-title').textContent='Autocorrection';
+  document.getElementById('res-sub').textContent=`Épreuve terminée — ${sessionExos.length} exercices — ${total} points au total`;
+  const badge=document.getElementById('mention-badge');
+  badge.textContent='📋 Corrige-toi avec les corrections ci-dessous';
+  badge.style.cssText='display:inline-block;padding:5px 16px;border-radius:30px;font-family:Syne,sans-serif;font-weight:700;font-size:.8rem;margin-bottom:26px;background:rgba(79,140,255,.12);color:var(--accent)';
+
+  // Afficher tous les exercices avec correction déployée
+  let html='';
+  sessionExos.forEach((exo,idx)=>{
+    html+=`<div class="exo-card">
+      <div class="exo-title-row">
+        <span class="exo-num">Exercice ${idx+1}</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="exo-theme-badge">${exo.theme}</span>
+          <span class="exo-pts-badge">${exo.pts} points</span>
+        </div>
+      </div>`;
+    if(exo.context) html+=`<div class="exo-context">${exo.context}</div>`;
+    if(exo.figure)  html+=`<div style="margin:12px 0;display:flex;justify-content:center;">${exo.figure}</div>`;
+    html+=`<div class="exo-body">`;
+    exo.questions.forEach((q,i)=>{ html+=`<div class="exo-q"><span class="exo-qn">${i+1}.</span><span>${q}</span></div>`; });
+    html+=`</div><div style="border:none;border-top:0.5px solid var(--border);margin:12px 0;"></div>
+    <div style="font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent2);margin-bottom:10px;">Correction</div>
+    <div class="corr-box show">`;
+    exo.correction.forEach(c=>{ html+=`<div class="cq"><div class="cql">${c.q}</div>${c.r}</div>`; });
+    html+=`</div></div>`;
+  });
+  document.getElementById('results-correction').innerHTML=html;
+  showScreen('screen-results');
+}
+
+// ═══════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function goHome(){
+  clearInterval(timerInterval);
+  document.getElementById('exam-topbar').classList.remove('show');
+  showScreen('screen-home');
+}
+function restartSame(){startSession();}
+
+// ═══════════════════════════════════════════════════
+// THÈME CLAIR/SOMBRE
+// ═══════════════════════════════════════════════════
+function toggleTheme(){
+  const light=document.body.classList.toggle('light');
+  document.getElementById('ti').textContent=light?'🌙':'☀️';
+  document.getElementById('tl').textContent=light?'Fond sombre':'Fond clair';
+  localStorage.setItem('dnb-theme',light?'light':'dark');
+}
+(function(){
+  if(localStorage.getItem('dnb-theme')==='light'){
+    document.body.classList.add('light');
+    document.getElementById('ti').textContent='🌙';
+    document.getElementById('tl').textContent='Fond sombre';
+  }
+})();
+
+initThemeGrid();
+</script>
+</body>
+</html>
