@@ -1376,6 +1376,489 @@ const SUJETS = [
       {q:"Question 4", r:`Débit net = 450−200 = <strong>250 m³/s</strong>.`}
     ]
   }
+],
+
+// ══════════════════════════════════════════════════
+// SUJET 11
+// ══════════════════════════════════════════════════
+[
+  {
+    theme:"Géométrie — Pythagore & trigo", pts:4,
+    context:`Pour concevoir la charpente triangulée d'un abri de jardin, un menuisier trace la figure ci-dessous : les points S, D, B sont alignés, ainsi que les points S, E, C. On donne SD = 3,6 m, DE = 4,8 m, SE = 6 m, SB = 7,2 m et SC = 12 m.`,
+    figure: svgThalesEmboite({letts:['S','B','C','D','E'], AD:3.6, DB:3.6, AE:6, EC:6}),
+    questions:[
+      "Montrer que le triangle SDE est rectangle en D.",
+      "Calculer l'aire du triangle SDE.",
+      "Sachant que (DE) et (BC) sont parallèles, calculer la longueur BC.",
+      `Calculer, au degré près, la mesure de l'angle ${ang('D','S','E')} à l'aide du cosinus.`,
+      `En déduire, sans nouveau calcul, la mesure de l'angle ${ang('B','S','C')}. Justifier.`
+    ],
+    correction:[
+      {q:"Question 1", r:`SD²+DE² = 3,6²+4,8² = 12,96+23,04 = 36 = 6² = SE². L'égalité étant vérifiée, le triangle SDE est <strong>rectangle en D</strong> (réciproque du théorème de Pythagore), l'hypoténuse étant [SE].`},
+      {q:"Question 2", r:`Le triangle SDE étant rectangle en D, aire = (SD×DE)÷2 = (3,6×4,8)÷2 = 17,28÷2 = <strong>8,64 m²</strong>.`},
+      {q:"Question 3", r:`(DE)//(BC), donc d'après Thalès : SD/SB = SE/SC = DE/BC. SD/SB = 3,6/7,2 = 0,5. Donc BC = DE÷0,5 = 4,8÷0,5 = <strong>9,6 m</strong>.`},
+      {q:"Question 4", r:`Dans le triangle SDE rectangle en D : cos(${ang('D','S','E')}) = SD/SE (côté adjacent ÷ hypoténuse) = 3,6/6 = 0,6. Donc ${ang('D','S','E')} = cos⁻¹(0,6) ≈ <strong>53°</strong>.`},
+      {q:"Question 5", r:`Les points S, D, B sont alignés et S, E, C sont alignés : les angles ${ang('D','S','E')} et ${ang('B','S','C')} désignent donc le <strong>même angle géométrique</strong>. ${ang('B','S','C')} ≈ <strong>53°</strong>.`}
+    ]
+  },
+  {
+    theme:"Fonctions", pts:4, tags:["Algorithmique & programmation"],
+    context:`On considère deux fonctions f et g définies par f(x) = (x−1)(x+5) et g(x) = 6x−5.`,
+    questions:[
+      "Calculer l'image de −3 par la fonction f.",
+      "Déterminer l'antécédent de 13 par la fonction g.",
+      `Voici un extrait d'un tableur donnant les valeurs de f(x) et g(x) pour x variant de −2 à 3 :<br>
+      <table style="border-collapse:collapse;margin:10px 0;font-size:.85rem;width:100%">
+        <tr style="background:var(--surface2)"><th style="border:1px solid var(--border);padding:5px 9px"></th><th style="border:1px solid var(--border);padding:5px 9px">A</th><th style="border:1px solid var(--border);padding:5px 9px">B</th><th style="border:1px solid var(--border);padding:5px 9px">C</th><th style="border:1px solid var(--border);padding:5px 9px">D</th><th style="border:1px solid var(--border);padding:5px 9px">E</th><th style="border:1px solid var(--border);padding:5px 9px">F</th></tr>
+        <tr><td style="border:1px solid var(--border);padding:5px 9px;background:var(--surface2)">x</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">−2</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">−1</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">0</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">1</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">2</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">3</td></tr>
+        <tr><td style="border:1px solid var(--border);padding:5px 9px;background:var(--surface2)">f(x)</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">−9</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">−8</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">−5</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">0</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">7</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">16</td></tr>
+        <tr><td style="border:1px solid var(--border);padding:5px 9px;background:var(--surface2)">g(x)</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">−17</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">−11</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">−5</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">1</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">7</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">13</td></tr>
+      </table>Quelle formule, saisie en B3 puis recopiée vers la droite, a pu permettre de calculer la ligne g(x) ?`,
+      "À l'aide du tableau, donner les solutions de l'équation f(x) = g(x).",
+      "Développer et réduire f(x), puis résoudre par le calcul l'équation f(x) = g(x). Retrouve-t-on les solutions lues dans le tableau ?"
+    ],
+    correction:[
+      {q:"Question 1", r:`f(−3) = (−3−1)×(−3+5) = (−4)×2 = <strong>−8</strong>.`},
+      {q:"Question 2", r:`g(x) = 13 ⟺ 6x−5 = 13 ⟺ 6x = 18 ⟺ x = 3. L'antécédent de 13 par g est <strong>3</strong>.`},
+      {q:"Question 3", r:`En B3, on a probablement saisi une formule du type <strong>=6*B2−5</strong> (ou =6*A2−5 selon la disposition), qu'on a ensuite recopiée vers la droite pour les autres valeurs de x.`},
+      {q:"Question 4", r:`D'après le tableau, f(x) = g(x) lorsque les deux lignes affichent la même valeur : c'est le cas pour x = 0 (les deux valent −5) et pour x = 2 (les deux valent 7). Solutions : <strong>0 et 2</strong>.`},
+      {q:"Question 5", r:`f(x) = (x−1)(x+5) = x²+5x−x−5 = x²+4x−5. On résout : x²+4x−5 = 6x−5 ⟺ x²+4x−5−6x+5 = 0 ⟺ x²−2x = 0 ⟺ x(x−2) = 0 ⟺ x=0 ou x=2. On retrouve bien <strong>les mêmes solutions</strong> que celles lues dans le tableau.`}
+    ]
+  },
+  {
+    theme:"Statistiques & probabilités", pts:3,
+    context:`Un collège recense ses 360 élèves demi-pensionnaires selon leur plat préféré à la cantine.<br>
+    <table style="border-collapse:collapse;margin:10px 0;font-size:.85rem;width:100%">
+      <tr style="background:var(--surface2)"><th style="border:1px solid var(--border);padding:6px 10px">Plat</th><th style="border:1px solid var(--border);padding:6px 10px">Pâtes</th><th style="border:1px solid var(--border);padding:6px 10px">Poulet-riz</th><th style="border:1px solid var(--border);padding:6px 10px">Poisson</th><th style="border:1px solid var(--border);padding:6px 10px">Végétarien</th></tr>
+      <tr><td style="border:1px solid var(--border);padding:6px 10px;text-align:center">Effectif</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center">144</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center">90</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center">?</td><td style="border:1px solid var(--border);padding:6px 10px;text-align:center">45</td></tr>
+    </table>`,
+    questions:[
+      "Calculer l'effectif des élèves ayant choisi le poisson.",
+      `Montrer que la fréquence des élèves ayant choisi poulet-riz est égale à ${frac(1,4)}.`,
+      "Une affiche du CDI annonce : « Plus d'un élève sur cinq préfère le plat végétarien. » Cette affirmation est-elle vraie ? Justifier.",
+      "On choisit un élève au hasard parmi les 360. Quelle est la probabilité qu'il ait choisi les pâtes ? (Donner le résultat sous forme décimale.)"
+    ],
+    correction:[
+      {q:"Question 1", r:`Effectif poisson = 360−144−90−45 = <strong>81 élèves</strong>.`},
+      {q:"Question 2", r:`Fréquence poulet-riz = ${frac(90,360)} = ${frac(1,4)} (on simplifie par 90). ✓`},
+      {q:"Question 3", r:`Fréquence végétarien = ${frac(81,360)} = 0,225 = 22,5%. Comme 22,5% > 20%, l'affirmation est <strong>vraie</strong>.`},
+      {q:"Question 4", r:`P(pâtes) = ${frac(144,360)} = <strong>0,4</strong>.`}
+    ]
+  },
+  {
+    theme:"Algorithmique & programmation", pts:3,
+    context:`Un élève programme en Scratch le lutin pour qu'il trace des figures géométriques.<br>
+    <strong>Programme 1</strong> : répéter 4 fois « avancer de 60 pas, tourner de A° ».<br>
+    <strong>Programme 2</strong> : répéter B fois « avancer de 60 pas, tourner de 120° ».<br>
+    <strong>Programme 3</strong> : répéter 6 fois « avancer de 60 pas, tourner de 60° ».`,
+    questions:[
+      "Quelle valeur faut-il donner à A pour que le programme 1 trace un carré ?",
+      "Quelle valeur faut-il donner à B pour que le programme 2 trace un triangle équilatéral ?",
+      "Quelle figure le programme 3 dessine-t-il ? Justifier en calculant la somme des angles de rotation.",
+      "Le lutin part de la position (0 ; 0), orienté vers la droite. Quelles sont ses coordonnées juste après avoir exécuté une seule fois le bloc « avancer de 60 pas » du programme 1 (avant toute rotation) ?"
+    ],
+    correction:[
+      {q:"Question 1", r:`Pour tracer un polygone régulier, la somme des angles de rotation doit valoir 360°. Avec 4 répétitions : A = 360÷4 = <strong>90°</strong>.`},
+      {q:"Question 2", r:`Avec des rotations de 120°, il faut B = 360÷120 = <strong>3</strong> répétitions.`},
+      {q:"Question 3", r:`La somme des rotations vaut 6×60° = 360°, avec 6 côtés de même longueur (60 pas) : le programme dessine un <strong>hexagone régulier</strong>.`},
+      {q:"Question 4", r:`Le lutin avance de 60 pas vers la droite (l'est) sans avoir tourné : ses nouvelles coordonnées sont <strong>(60 ; 0)</strong>.`}
+    ]
+  }
+],
+
+// ══════════════════════════════════════════════════
+// SUJET 12
+// ══════════════════════════════════════════════════
+[
+  {
+    theme:"Fonctions", pts:3,
+    context:`Deux salles d'escalade proposent des tarifs différents. Salle A : 90€ d'inscription annuelle + 8€ par séance. Salle B : aucune inscription, 14€ par séance, sans engagement. On note f(x) = 90+8x le prix annuel à la salle A pour x séances, et g(x) = 14x le prix annuel à la salle B pour x séances.`,
+    questions:[
+      "Calculer le prix payé pour 10 séances dans chaque salle.",
+      "Associer chaque fonction f et g à la salle correspondante, en justifiant.",
+      "Résoudre l'équation 90+8x = 14x, et interpréter le résultat obtenu.",
+      "Un grimpeur prévoit de faire 12 séances dans l'année. Quelle salle doit-il choisir ? Justifier par un calcul."
+    ],
+    correction:[
+      {q:"Question 1", r:`f(10) = 90+8×10 = 90+80 = <strong>170€</strong> (salle A). g(10) = 14×10 = <strong>140€</strong> (salle B).`},
+      {q:"Question 2", r:`f(x) = 90+8x comporte un terme fixe de 90€ : c'est la <strong>salle A</strong>. g(x) = 14x est proportionnel au nombre de séances, sans partie fixe : c'est la <strong>salle B</strong>.`},
+      {q:"Question 3", r:`90+8x = 14x ⟺ 90 = 6x ⟺ x = 15. Les deux salles coûtent le même prix pour <strong>15 séances</strong> ; au-delà, la salle A devient plus avantageuse.`},
+      {q:"Question 4", r:`f(12) = 90+8×12 = 90+96 = 186€. g(12) = 14×12 = 168€. Comme 168 < 186, le grimpeur doit choisir la <strong>salle B</strong> pour 12 séances.`}
+    ]
+  },
+  {
+    theme:"Thalès", pts:4,
+    context:`Un gobelet en carton a la forme d'un cône. Sur le schéma simplifié ci-dessous (une coupe verticale du gobelet), O désigne la pointe du cône, OP représente la hauteur totale du gobelet et PQ son diamètre. Le point M appartient à [OP], le point N appartient à [OQ], et (MN) est parallèle à (PQ) : elle matérialise une graduation. On donne OM = 5 cm, MN = 6 cm et OP = 12,5 cm.`,
+    figure: svgThalesEmboite({letts:['O','P','Q','M','N'], AD:5, DB:7.5, AE:5, EC:7.5}),
+    questions:[
+      "Montrer que le rapport OM/OP est égal à 0,4.",
+      "En déduire, à l'aide du théorème de Thalès, la longueur PQ.",
+      "Calculer le volume V du gobelet plein, arrondi au dixième de cm³. (Formule : V = (1/3)×π×r²×h, avec π ≈ 3,14 et r le rayon du gobelet)",
+      "Un barista remplit des petits verres de dégustation de 25 cL chacun. Combien de verres pleins peut-il remplir avec le contenu du gobelet ? (1 cm³ = 1 mL)"
+    ],
+    correction:[
+      {q:"Question 1", r:`OM/OP = 5/12,5 = <strong>0,4</strong>. ✓`},
+      {q:"Question 2", r:`(MN)//(PQ), donc d'après Thalès : OM/OP = MN/PQ, soit 0,4 = 6/PQ. Donc PQ = 6/0,4 = <strong>15 cm</strong>.`},
+      {q:"Question 3", r:`Le rayon du gobelet est r = PQ/2 = 7,5 cm et sa hauteur est OP = 12,5 cm. V = (1/3)×3,14×7,5²×12,5 = (1/3)×3,14×56,25×12,5 ≈ <strong>735,9 cm³</strong>.`},
+      {q:"Question 4", r:`Un verre de 25 cL = 250 cm³. 2×250 = 500 cm³ < 735,9 cm³ < 750 cm³ = 3×250. Le barista peut donc remplir <strong>2 verres pleins</strong> (il reste environ 235,9 cm³, insuffisant pour un troisième verre complet).`}
+    ]
+  },
+  {
+    theme:"Calcul littéral & équations", pts:4, tags:["Algorithmique & programmation"],
+    context:`On considère deux programmes de calcul.<br>
+    <strong>Programme A</strong> : choisir un nombre, lui ajouter 3, multiplier le résultat par le nombre de départ diminué de 3.<br>
+    <strong>Programme B</strong> : choisir un nombre, calculer son carré, puis soustraire 9.`,
+    questions:[
+      "Quel nombre obtient-on avec le programme A en partant de 7 ?",
+      "Quel nombre obtient-on avec le programme B en partant de 7 ?",
+      "On note x le nombre choisi au départ. Exprimer, sous forme développée et réduite, le résultat du programme A.",
+      "Que peut-on en conclure sur les deux programmes ? Justifier à l'aide de la question précédente.",
+      "Résoudre l'équation x²−9 = 0. Que représentent les solutions trouvées pour les deux programmes ?",
+      "Une élève saisit dans un tableur, en case A1, le nombre 7, puis en case B1 la formule =(A1+3)*(A1−3). Quelle valeur B1 affiche-t-il ? Justifier sans refaire le calcul."
+    ],
+    correction:[
+      {q:"Question 1", r:`(7+3)×(7−3) = 10×4 = <strong>40</strong>.`},
+      {q:"Question 2", r:`7²−9 = 49−9 = <strong>40</strong>.`},
+      {q:"Question 3", r:`(x+3)(x−3) = x²−9.`},
+      {q:"Question 4", r:`Le résultat développé du programme A (x²−9) est identique à l'expression du programme B. Les <strong>deux programmes donnent donc toujours le même résultat</strong>, quel que soit le nombre de départ choisi.`},
+      {q:"Question 5", r:`x²−9 = 0 ⟺ x² = 9 ⟺ x = 3 ou x = −3. Ce sont les <strong>nombres de départ</strong> pour lesquels les deux programmes donnent 0 comme résultat.`},
+      {q:"Question 6", r:`B1 affiche <strong>40</strong> : la formule (A1+3)×(A1−3) reproduit exactement le calcul du programme A appliqué à 7, déjà trouvé à la question 1.`}
+    ]
+  },
+  {
+    theme:"Proportionnalité & pourcentages", pts:3,
+    context:`Un site de vente en ligne propose un blouson à 84€. Une réduction de 15% est appliquée sur ce prix. Des frais de port de 4,90€ s'ajoutent ensuite, sauf si le montant de la commande après réduction atteint ou dépasse 100€ (livraison alors offerte).`,
+    questions:[
+      "Calculer le montant de la réduction de 15% sur 84€.",
+      "En déduire le prix du blouson après réduction.",
+      "Un client commande un seul blouson. Doit-il payer les frais de port ? Calculer, si besoin, le montant total de sa commande.",
+      "Un deuxième client commande deux blousons identiques (la réduction de 15% s'applique à chacun). Le montant de sa commande après réduction dépasse-t-il 100€ ? Ce client bénéficie-t-il de la livraison offerte ?"
+    ],
+    correction:[
+      {q:"Question 1", r:`84×0,15 = <strong>12,60€</strong>.`},
+      {q:"Question 2", r:`84−12,60 = <strong>71,40€</strong>.`},
+      {q:"Question 3", r:`71,40€ < 100€, donc le client doit payer les frais de port. Total = 71,40+4,90 = <strong>76,30€</strong>.`},
+      {q:"Question 4", r:`2×71,40 = 142,80€. Comme 142,80 > 100, ce client <strong>bénéficie de la livraison offerte</strong> ; il paie <strong>142,80€</strong>.`}
+    ]
+  }
+],
+
+// ══════════════════════════════════════════════════
+// SUJET 13
+// ══════════════════════════════════════════════════
+[
+  {
+    theme:"Thalès", pts:4,
+    context:`Les points A, B, M sont alignés, ainsi que les points A, C, N. Le triangle ABC est rectangle en B, avec AB = 4,5 cm et BC = 6 cm. On donne également BM = 2,25 cm, et les droites (BC) et (MN) sont parallèles.`,
+    figure: svgThalesEmboite({letts:['A','M','N','B','C'], AD:4.5, DB:2.25, AE:7.5, EC:3.75}),
+    questions:[
+      "Calculer AC, en utilisant le théorème de Pythagore dans le triangle ABC rectangle en B.",
+      "Sachant que (BC)//(MN), calculer les longueurs AN et MN.",
+      "Calculer le périmètre du triangle ABC.",
+      "Calculer le périmètre du quadrilatère BMNC.",
+      "Comparer les deux périmètres obtenus."
+    ],
+    correction:[
+      {q:"Question 1", r:`AC² = AB²+BC² = 4,5²+6² = 20,25+36 = 56,25. AC = √56,25 = <strong>7,5 cm</strong>.`},
+      {q:"Question 2", r:`AM = AB+BM = 4,5+2,25 = 6,75 cm. Le coefficient d'agrandissement est k = AM/AB = 6,75/4,5 = 1,5. Donc AN = AC×1,5 = 7,5×1,5 = <strong>11,25 cm</strong> et MN = BC×1,5 = 6×1,5 = <strong>9 cm</strong>.`},
+      {q:"Question 3", r:`Périmètre ABC = AB+BC+AC = 4,5+6+7,5 = <strong>18 cm</strong>.`},
+      {q:"Question 4", r:`NC = AN−AC = 11,25−7,5 = 3,75 cm. Périmètre BMNC = BM+MN+NC+CB = 2,25+9+3,75+6 = <strong>21 cm</strong>.`},
+      {q:"Question 5", r:`Le périmètre du quadrilatère BMNC (21 cm) est <strong>supérieur de 3 cm</strong> à celui du triangle ABC (18 cm) : les deux périmètres ne sont pas égaux.`}
+    ]
+  },
+  {
+    theme:"Grandeurs & mesures", pts:4,
+    context:`Un bonbon en forme de « gélule » est constitué d'un cylindre prolongé à chaque extrémité par une demi-sphère de même rayon. Le rayon vaut 3 mm et la longueur totale du bonbon est de 18 mm.`,
+    figure: svgCylindreDemiSphere({r:'3 mm', h:'12 mm', label:"Bonbon (coupe — arrondi identique de l'autre côté)"}),
+    questions:[
+      "Montrer que la hauteur de la partie cylindrique du bonbon est de 12 mm.",
+      "Calculer le volume de la partie cylindrique, arrondi à l'unité. (π ≈ 3,14)",
+      "Les deux demi-sphères réunies forment une sphère complète de rayon 3 mm. Calculer son volume, arrondi à l'unité. (Formule : V = (4/3)×π×r³)",
+      "En déduire le volume total d'un bonbon, arrondi à l'unité.",
+      "Le fabricant vend ces bonbons en sachet de 300g à 3,60€, ou en sachet de 500g à 5,60€. Calculer le prix au gramme de chaque sachet et déterminer lequel est le plus avantageux."
+    ],
+    correction:[
+      {q:"Question 1", r:`La longueur totale se compose de la hauteur du cylindre et des deux rayons des demi-sphères (un à chaque bout) : hauteur = 18−2×3 = <strong>12 mm</strong>.`},
+      {q:"Question 2", r:`V = π×r²×h = 3,14×3²×12 = 3,14×9×12 = 339,12 ≈ <strong>339 mm³</strong>.`},
+      {q:"Question 3", r:`V = (4/3)×3,14×3³ = (4/3)×3,14×27 = 113,04 ≈ <strong>113 mm³</strong>.`},
+      {q:"Question 4", r:`Volume total ≈ 339+113 = <strong>452 mm³</strong>.`},
+      {q:"Question 5", r:`Sachet 300g : 3,60÷300 = 0,012€/g. Sachet 500g : 5,60÷500 = 0,0112€/g. Le sachet de <strong>500g est le plus avantageux</strong> (prix au gramme plus bas).`}
+    ]
+  },
+  {
+    theme:"Calcul littéral & équations", pts:4, tags:["Algorithmique & programmation"],
+    context:`On considère deux programmes de calcul.<br>
+    <strong>Programme A</strong> : choisir un nombre, lui soustraire 5, multiplier le résultat par 3, puis ajouter le double du nombre de départ.<br>
+    <strong>Programme B</strong> : choisir un nombre, le multiplier par 5, puis soustraire 15.`,
+    questions:[
+      "Appliquer le programme A au nombre 4.",
+      "Appliquer le programme B au nombre 4.",
+      "On note x le nombre choisi au départ. Exprimer, sous forme développée et réduite, le résultat du programme A.",
+      "Que remarque-t-on en comparant avec le résultat du programme B ? Les deux programmes sont-ils équivalents ?",
+      "Un professeur programme en Scratch un bloc qui calcule 5×nombre−15 pour vérifier automatiquement les deux programmes. Pour quelle valeur de départ ce bloc affichera-t-il 0 ?",
+      "Vérifier ce résultat en appliquant le programme A à la valeur trouvée."
+    ],
+    correction:[
+      {q:"Question 1", r:`3×(4−5)+2×4 = 3×(−1)+8 = −3+8 = <strong>5</strong>.`},
+      {q:"Question 2", r:`5×4−15 = 20−15 = <strong>5</strong>.`},
+      {q:"Question 3", r:`3(x−5)+2x = 3x−15+2x = <strong>5x−15</strong>.`},
+      {q:"Question 4", r:`Le résultat développé du programme A (5x−15) est identique à l'expression du programme B. Les <strong>deux programmes sont équivalents</strong> : ils donnent toujours le même résultat, quel que soit x.`},
+      {q:"Question 5", r:`5x−15 = 0 ⟺ 5x = 15 ⟺ x = <strong>3</strong>.`},
+      {q:"Question 6", r:`Programme A avec x=3 : 3×(3−5)+2×3 = 3×(−2)+6 = −6+6 = <strong>0</strong>. ✓ Le résultat est cohérent.`}
+    ]
+  },
+  {
+    theme:"Arithmétique — PGCD & divisibilité", pts:3,
+    context:`Une fleuriste dispose de 84 roses et de 126 tulipes. Elle souhaite confectionner des bouquets tous identiques (même composition), en utilisant la totalité des fleurs, avec le plus grand nombre de bouquets possible.`,
+    questions:[
+      "La fleuriste peut-elle réaliser 12 bouquets identiques en utilisant toutes les fleurs ? Justifier.",
+      "Décomposer 84 et 126 en produits de facteurs premiers.",
+      "En déduire le PGCD de 84 et 126, puis le nombre maximal de bouquets identiques que la fleuriste peut réaliser.",
+      "Déterminer la composition de chaque bouquet (nombre de roses et de tulipes)."
+    ],
+    correction:[
+      {q:"Question 1", r:`84÷12 = 7 (entier), mais 126÷12 = 10,5 (non entier). Comme 126 n'est pas divisible par 12, la fleuriste <strong>ne peut pas</strong> faire 12 bouquets identiques en utilisant toutes les fleurs.`},
+      {q:"Question 2", r:`84 = 2²×3×7. 126 = 2×3²×7.`},
+      {q:"Question 3", r:`Le PGCD se forme avec les facteurs premiers communs, à la plus petite puissance commune : PGCD(84;126) = 2×3×7 = <strong>42</strong>. La fleuriste peut donc réaliser au maximum <strong>42 bouquets</strong>.`},
+      {q:"Question 4", r:`84÷42 = 2 roses par bouquet. 126÷42 = 3 tulipes par bouquet. Chaque bouquet contient <strong>2 roses et 3 tulipes</strong>.`}
+    ]
+  }
+],
+
+// ══════════════════════════════════════════════════
+// SUJET 14
+// ══════════════════════════════════════════════════
+[
+  {
+    theme:"Calcul littéral & équations", pts:3, tags:["Algorithmique & programmation"],
+    context:`ABCD est un rectangle tel que AB = 4x+1 et BC = x+2 (en cm), où x désigne un nombre positif. EFG est un triangle équilatéral de côté 3x+4 (en cm).`,
+    questions:[
+      "Calculer AB, BC et le périmètre du rectangle ABCD pour x = 5.",
+      "Exprimer, en fonction de x, le périmètre du rectangle ABCD sous forme développée et réduite.",
+      "Exprimer, en fonction de x, le périmètre du triangle équilatéral EFG.",
+      `Un élève construit un tableur avec une colonne x, une colonne « périmètre rectangle » et une colonne « périmètre triangle » :<br>
+      <table style="border-collapse:collapse;margin:10px 0;font-size:.85rem;width:100%">
+        <tr style="background:var(--surface2)"><th style="border:1px solid var(--border);padding:5px 9px">x</th><th style="border:1px solid var(--border);padding:5px 9px">5</th><th style="border:1px solid var(--border);padding:5px 9px">6</th><th style="border:1px solid var(--border);padding:5px 9px">7</th></tr>
+        <tr><td style="border:1px solid var(--border);padding:5px 9px;background:var(--surface2)">Périmètre rectangle</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">56</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">66</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">76</td></tr>
+        <tr><td style="border:1px solid var(--border);padding:5px 9px;background:var(--surface2)">Périmètre triangle</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">57</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">66</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">75</td></tr>
+      </table>D'après ce tableau, pour quelle valeur de x les deux périmètres semblent-ils égaux ?`,
+      "Résoudre par le calcul l'équation traduisant l'égalité des deux périmètres, et vérifier la valeur lue dans le tableau."
+    ],
+    correction:[
+      {q:"Question 1", r:`Pour x=5 : AB = 4×5+1 = 21 cm, BC = 5+2 = 7 cm. Périmètre = 2×(21+7) = 2×28 = <strong>56 cm</strong>.`},
+      {q:"Question 2", r:`Périmètre = 2×(AB+BC) = 2×(4x+1+x+2) = 2×(5x+3) = <strong>10x+6</strong>.`},
+      {q:"Question 3", r:`Périmètre = 3×(3x+4) = <strong>9x+12</strong>.`},
+      {q:"Question 4", r:`D'après le tableau, les deux périmètres sont égaux (66) pour <strong>x = 6</strong>.`},
+      {q:"Question 5", r:`10x+6 = 9x+12 ⟺ 10x−9x = 12−6 ⟺ x = <strong>6</strong>. On retrouve bien la valeur lue dans le tableau.`}
+    ]
+  },
+  {
+    theme:"Géométrie — Pythagore & trigo", pts:4,
+    context:`Le triangle DEF est isocèle en E, avec ${ang('D','E','F')} = 52°. Le triangle DFG vérifie DF = 9 cm, FG = 12 cm et DG = 15 cm. Les segments [ED] et [DG] partent tous deux du point D, de part et d'autre du segment [DF].`,
+    figure: svgPythaTriangle({A:{x:70,y:40}, B:{x:70,y:220}, C:{x:260,y:220}, labelAB:'DF = 9 cm', labelBC:'FG = 12 cm', labelAC:'DG = 15 cm', showArcA:true}),
+    questions:[
+      `Calculer la mesure des angles ${ang('E','D','F')} et ${ang('E','F','D')} du triangle isocèle DEF.`,
+      "Démontrer que le triangle DFG est rectangle en F.",
+      `Calculer, au degré près, la mesure de l'angle ${ang('F','D','G')} à l'aide du cosinus.`,
+      "Les points E, D et G sont-ils alignés ? Justifier à l'aide des résultats précédents."
+    ],
+    correction:[
+      {q:"Question 1", r:`La somme des angles d'un triangle vaut 180°. Le triangle DEF étant isocèle en E, les angles à la base ${ang('E','D','F')} et ${ang('E','F','D')} sont égaux : (180−52)÷2 = <strong>64°</strong> chacun.`},
+      {q:"Question 2", r:`DF²+FG² = 9²+12² = 81+144 = 225. DG² = 15² = 225. Les deux valeurs sont égales, donc d'après la réciproque du théorème de Pythagore, le triangle DFG est <strong>rectangle en F</strong>.`},
+      {q:"Question 3", r:`Dans le triangle DFG rectangle en F : cos(${ang('F','D','G')}) = DF/DG = 9/15 = 0,6. Donc ${ang('F','D','G')} = cos⁻¹(0,6) ≈ <strong>53°</strong>.`},
+      {q:"Question 4", r:`Si E, D, G étaient alignés, on aurait ${ang('E','D','F')}+${ang('F','D','G')} = 180° (angles supplémentaires de part et d'autre de [DF]). Or 64+53 = 117° ≠ 180°. Les points E, D et G <strong>ne sont pas alignés</strong>.`}
+    ]
+  },
+  {
+    theme:"Grandeurs & mesures", pts:3,
+    context:`Un atelier d'orfèvrerie fabrique un pendentif en forme de sphère pleine en or, de rayon 0,8 cm. La masse volumique de l'or est de 19,3 g/cm³. L'atelier est ouvert de 8h45 à 17h20, avec une pause de 40 minutes.`,
+    figure: svgSphere({r:'0,8 cm', label:'Pendentif en or (plein)'}),
+    questions:[
+      "Calculer le volume de la sphère, arrondi au centième de cm³. (Formule : V = (4/3)×π×r³, π ≈ 3,14)",
+      "En déduire la masse du pendentif, arrondie au gramme.",
+      "Calculer la durée effective de travail à l'atelier (ouverture moins la pause).",
+      "Un bijoutier fabrique un pendentif en 25 minutes. Combien de pendentifs peut-il fabriquer au maximum pendant la durée de travail calculée à la question précédente ?"
+    ],
+    correction:[
+      {q:"Question 1", r:`V = (4/3)×3,14×0,8³ = (4/3)×3,14×0,512 ≈ <strong>2,14 cm³</strong>.`},
+      {q:"Question 2", r:`masse = 2,14×19,3 ≈ <strong>41 g</strong>.`},
+      {q:"Question 3", r:`De 8h45 à 17h20, il s'écoule 8h35min. En retirant la pause de 40min : 8h35min−40min = <strong>7h55min</strong>.`},
+      {q:"Question 4", r:`7h55min = 475 min. 475÷25 = <strong>19 pendentifs</strong> (exactement, sans reste).`}
+    ]
+  },
+  {
+    theme:"Transformations du plan", pts:3,
+    context:`Sur le plan d'une maquette d'architecte, un point A a pour image A' sur le plan définitif par une homothétie de centre O, avec O, A, A' alignés dans cet ordre. On donne OA = 3 cm et OA' = 10,5 cm.`,
+    questions:[
+      "Calculer le rapport k de cette homothétie, en précisant son signe.",
+      "Un mur mesure BC = 1,2 cm sur la maquette. Calculer sa longueur B'C' sur le plan définitif.",
+      "Une fenêtre a une aire de 0,8 cm² sur la maquette. Calculer son aire sur le plan définitif. (Rappel : une homothétie de rapport k multiplie les aires par k².)",
+      "Dans une autre configuration, le point M a pour image M' par une homothétie de centre O', avec O'M = 4 cm et O'M' = 10 cm, mais cette fois O' se trouve entre M et M'. Déterminer le rapport de cette homothétie, en précisant son signe."
+    ],
+    correction:[
+      {q:"Question 1", r:`O, A, A' sont alignés dans cet ordre : A' est du même côté de O que A, donc le rapport est positif. k = OA'/OA = 10,5/3 = <strong>3,5</strong>.`},
+      {q:"Question 2", r:`B'C' = k×BC = 3,5×1,2 = <strong>4,2 cm</strong>.`},
+      {q:"Question 3", r:`aire' = 0,8×3,5² = 0,8×12,25 = <strong>9,8 cm²</strong>.`},
+      {q:"Question 4", r:`O' est situé entre M et M' : l'image M' est donc du côté opposé à M par rapport à O', le rapport est négatif. k' = −O'M'/O'M = −10/4 = <strong>−2,5</strong>.`}
+    ]
+  }
+],
+
+// ══════════════════════════════════════════════════
+// SUJET 15
+// ══════════════════════════════════════════════════
+[
+  {
+    theme:"Statistiques & probabilités", pts:3,
+    context:`Un lycée organise un tournoi inter-classes de basket-ball. Voici le nombre de paniers marqués par chacune des 7 équipes finalistes : Équipe A : 34 ; Équipe B : 41 ; Équipe C : 28 ; Équipe D : 52 ; Équipe E : 39 ; Équipe F : 45 ; Équipe G : 30. La saison précédente, l'équipe F avait marqué 36 paniers en finale.`,
+    questions:[
+      "Calculer le nombre total de paniers marqués par les 7 équipes.",
+      "Une affiche indique : « Plus de 20% des paniers ont été marqués par l'équipe D. » Cette affirmation est-elle vraie ? Justifier.",
+      "Déterminer la médiane du nombre de paniers marqués par les 7 équipes, et interpréter ce résultat.",
+      "Calculer le pourcentage d'évolution du nombre de paniers de l'équipe F entre les deux saisons."
+    ],
+    correction:[
+      {q:"Question 1", r:`34+41+28+52+39+45+30 = <strong>269 paniers</strong>.`},
+      {q:"Question 2", r:`${frac(52,269)} ≈ 0,1933, soit environ 19,3% < 20%. L'affirmation est <strong>fausse</strong>.`},
+      {q:"Question 3", r:`On ordonne les valeurs : 28, 30, 34, 39, 41, 45, 52. Il y a 7 valeurs (nombre impair), la médiane est donc la 4ᵉ valeur : <strong>39</strong>. Cela signifie qu'au moins la moitié des équipes ont marqué 39 paniers ou moins (et au moins la moitié, 39 ou plus).`},
+      {q:"Question 4", r:`Évolution = ${frac('45−36',36)} = ${frac(9,36)} = 0,25 = <strong>+25%</strong>.`}
+    ]
+  },
+  {
+    theme:"Thalès", pts:4,
+    context:`Les droites (BD) et (CE) sont sécantes en A, avec (BC) et (DE) parallèles. On donne AB = 9 cm, AC = 12 cm, BC = 15 cm et AD = 13,5 cm.`,
+    figure: svgThalesEmboite({letts:['A','D','E','B','C'], AD:9, DB:4.5, AE:12, EC:6}),
+    questions:[
+      "Démontrer que le triangle ABC est rectangle en A.",
+      "Calculer les longueurs AE et DE.",
+      `Justifier que les angles ${ang('A','B','C')} et ${ang('A','D','E')} sont égaux.`,
+      "En déduire que les triangles ABC et ADE sont semblables (préciser le rapport).",
+      "Calculer l'aire du quadrilatère BDEC."
+    ],
+    correction:[
+      {q:"Question 1", r:`AB²+AC² = 9²+12² = 81+144 = 225. BC² = 15² = 225. Les deux valeurs étant égales, d'après la réciproque du théorème de Pythagore, le triangle ABC est <strong>rectangle en A</strong>.`},
+      {q:"Question 2", r:`(BC)//(DE), donc d'après Thalès : AB/AD = AC/AE = BC/DE. AB/AD = 9/13,5 = 2/3, donc le coefficient est 1,5. AE = AC×1,5 = 12×1,5 = <strong>18 cm</strong>. DE = BC×1,5 = 15×1,5 = <strong>22,5 cm</strong>.`},
+      {q:"Question 3", r:`(BC) et (DE) sont parallèles et coupées par la sécante (AD) : les angles ${ang('A','B','C')} et ${ang('A','D','E')} sont des <strong>angles correspondants</strong>, donc égaux.`},
+      {q:"Question 4", r:`Les triangles ABC et ADE ont un angle commun en A et leurs côtés sont proportionnels dans le rapport 1,5 (AD/AB = AE/AC = DE/BC = 1,5) : ils sont donc <strong>semblables, de rapport 1,5</strong>.`},
+      {q:"Question 5", r:`ABC est rectangle en A : aire(ABC) = (AB×AC)÷2 = (9×12)÷2 = 54 cm². ADE possède les mêmes angles qu'ABC, donc il est lui aussi rectangle en A : aire(ADE) = (AD×AE)÷2 = (13,5×18)÷2 = 121,5 cm². Aire(BDEC) = aire(ADE)−aire(ABC) = 121,5−54 = <strong>67,5 cm²</strong>.`}
+    ]
+  },
+  {
+    theme:"Fonctions", pts:4,
+    context:`Voici un extrait d'une table donnant le volume V(r) d'une boule pleine en plastique, en cm³, en fonction de son rayon r, en cm (formule V = (4/3)×π×r³, π ≈ 3,14) :<br>
+    <table style="border-collapse:collapse;margin:10px 0;font-size:.85rem;width:100%">
+      <tr style="background:var(--surface2)"><th style="border:1px solid var(--border);padding:5px 9px">r (cm)</th><th style="border:1px solid var(--border);padding:5px 9px">1</th><th style="border:1px solid var(--border);padding:5px 9px">2</th><th style="border:1px solid var(--border);padding:5px 9px">3</th><th style="border:1px solid var(--border);padding:5px 9px">4</th><th style="border:1px solid var(--border);padding:5px 9px">5</th></tr>
+      <tr><td style="border:1px solid var(--border);padding:5px 9px;background:var(--surface2)">V(r) (cm³)</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">4,2</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">33,5</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">113</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">267,9</td><td style="border:1px solid var(--border);padding:5px 9px;text-align:center">523,3</td></tr>
+    </table>Une usine fabrique ensuite des boules en plastique plein de rayon 2 cm.`,
+    questions:[
+      "D'après le tableau, quel est le volume d'une boule de rayon 3 cm ?",
+      "Pour quel rayon, parmi ceux du tableau, le volume est-il le plus proche de 270 cm³ ?",
+      "Retrouver par le calcul le volume d'une boule de rayon 2 cm.",
+      "Une machine dispose de 500 cm³ de plastique fondu pour une fournée. Combien de boules complètes de rayon 2 cm peut-elle produire ?",
+      "Chaque boule finie pèse 30g. Quelle masse totale représentent les boules produites lors d'une fournée complète (question précédente) ?"
+    ],
+    correction:[
+      {q:"Question 1", r:`D'après le tableau, une boule de rayon 3 cm a un volume d'environ <strong>113 cm³</strong>.`},
+      {q:"Question 2", r:`Le volume le plus proche de 270 cm³ est 267,9 cm³, obtenu pour <strong>r = 4 cm</strong>.`},
+      {q:"Question 3", r:`V = (4/3)×3,14×2³ = (4/3)×3,14×8 ≈ <strong>33,5 cm³</strong> (valeur cohérente avec le tableau).`},
+      {q:"Question 4", r:`500÷33,5 ≈ 14,9. La machine peut donc produire <strong>14 boules complètes</strong> (il reste du plastique, insuffisant pour une 15ᵉ boule).`},
+      {q:"Question 5", r:`14×30 = <strong>420 g</strong>.`}
+    ]
+  },
+  {
+    theme:"Arithmétique — PGCD & divisibilité", pts:3,
+    context:`Un pâtissier dispose de 156 macarons au chocolat et 195 macarons à la framboise. Il souhaite composer des boîtes toutes identiques (même nombre de macarons de chaque parfum), en utilisant la totalité des macarons, avec le plus grand nombre de boîtes possible.`,
+    questions:[
+      "Le pâtissier peut-il composer 15 boîtes identiques en utilisant tous les macarons ? Justifier.",
+      "Décomposer 156 et 195 en produits de facteurs premiers.",
+      "En déduire le PGCD de 156 et 195, puis le nombre maximal de boîtes identiques réalisables.",
+      "Déterminer la composition de chaque boîte."
+    ],
+    correction:[
+      {q:"Question 1", r:`156÷15 = 10,4, qui n'est pas un nombre entier : 156 n'est pas divisible par 15. Le pâtissier <strong>ne peut pas</strong> faire 15 boîtes identiques en utilisant tous les macarons.`},
+      {q:"Question 2", r:`156 = 2²×3×13. 195 = 3×5×13.`},
+      {q:"Question 3", r:`Les facteurs premiers communs sont 3 et 13 : PGCD(156;195) = 3×13 = <strong>39</strong>. Le pâtissier peut donc réaliser au maximum <strong>39 boîtes</strong>.`},
+      {q:"Question 4", r:`156÷39 = 4 macarons au chocolat. 195÷39 = 5 macarons à la framboise. Chaque boîte contient <strong>4 macarons chocolat et 5 macarons framboise</strong>.`}
+    ]
+  }
+],
+
+// ══════════════════════════════════════════════════
+// SUJET 16
+// ══════════════════════════════════════════════════
+[
+  {
+    theme:"Calcul littéral & équations", pts:3, tags:["Algorithmique & programmation"],
+    context:`On considère deux programmes de calcul.<br>
+    <strong>Programme A</strong> : choisir un nombre, le multiplier par −2, ajouter 7, puis ajouter le triple du nombre de départ.<br>
+    <strong>Programme B</strong> : choisir un nombre, le multiplier par 3, soustraire le double du nombre de départ, puis ajouter 7.`,
+    questions:[
+      "Appliquer le programme A au nombre −2.",
+      "Appliquer le programme B au nombre −2.",
+      "On note x le nombre choisi. Exprimer, sous forme réduite, le résultat du programme A.",
+      "Exprimer, sous forme réduite, le résultat du programme B.",
+      "Que peut-on conclure sur les deux programmes ? Justifier.",
+      "Un élève saisit dans un tableur la formule =A1+7 en case B1, en faisant varier A1. Quelle valeur doit-il saisir en A1 pour que les deux programmes affichent 0 ?"
+    ],
+    correction:[
+      {q:"Question 1", r:`(−2)×(−2)+7+3×(−2) = 4+7−6 = <strong>5</strong>.`},
+      {q:"Question 2", r:`3×(−2)−2×(−2)+7 = −6+4+7 = <strong>5</strong>.`},
+      {q:"Question 3", r:`−2x+7+3x = <strong>x+7</strong>.`},
+      {q:"Question 4", r:`3x−2x+7 = <strong>x+7</strong>.`},
+      {q:"Question 5", r:`Les deux expressions réduites sont identiques (x+7) : les <strong>deux programmes donnent toujours le même résultat</strong>, quel que soit le nombre de départ.`},
+      {q:"Question 6", r:`x+7 = 0 ⟺ x = <strong>−7</strong>. L'élève doit saisir −7 en case A1.`}
+    ]
+  },
+  {
+    theme:"Fonctions", pts:4,
+    context:`Une salle de sport propose trois tarifs annuels. Tarif A : 6€ par séance, sans inscription. Tarif B : 20€ d'inscription + 4€ par séance. Tarif C : forfait illimité à 90€, quel que soit le nombre de séances. On note f(x)=6x, g(x)=20+4x et h(x)=90 les prix annuels pour x séances selon le tarif choisi.`,
+    questions:[
+      "Calculer le prix pour 10 séances avec le tarif B.",
+      "Associer chaque fonction f, g, h au tarif correspondant (A, B ou C), en justifiant.",
+      "Le tarif A représente-t-il une situation de proportionnalité ? Justifier.",
+      "Résoudre l'équation 6x = 20+4x. En déduire à partir de combien de séances le tarif B devient plus avantageux que le tarif A.",
+      "À partir de combien de séances (nombre entier) le tarif C devient-il plus avantageux que le tarif B ?"
+    ],
+    correction:[
+      {q:"Question 1", r:`g(10) = 20+4×10 = 20+40 = <strong>60€</strong>.`},
+      {q:"Question 2", r:`f(x)=6x est proportionnel, sans partie fixe : <strong>tarif A</strong>. g(x)=20+4x comporte une partie fixe de 20€ : <strong>tarif B</strong>. h(x)=90 est constant, indépendant du nombre de séances : <strong>tarif C</strong>.`},
+      {q:"Question 3", r:`Oui : f(x)=6x est de la forme ax (sans terme constant), donc le prix est <strong>proportionnel</strong> au nombre de séances.`},
+      {q:"Question 4", r:`6x = 20+4x ⟺ 2x = 20 ⟺ x = 10. À 10 séances, les deux tarifs coûtent le même prix (60€) ; <strong>au-delà de 10 séances, le tarif B devient plus avantageux</strong>.`},
+      {q:"Question 5", r:`20+4x = 90 ⟺ 4x = 70 ⟺ x = 17,5. Comme x doit être un nombre entier de séances, il faut vérifier x=18 : g(18)=20+72=92€ > 90€. Le tarif C devient donc plus avantageux <strong>à partir de 18 séances</strong>.`}
+    ]
+  },
+  {
+    theme:"Transformations du plan", pts:3,
+    context:`Un architecte d'intérieur réalise une maquette réduite d'une pièce, par une homothétie de centre O et de rapport k = 1/4. Sur la pièce réelle, un mur mesure AB = 8 m, l'aire du sol est de 24 m², et une armoire a un volume de 1,6 m³. Le point O est situé à 5m d'un coin C de la pièce réelle.`,
+    questions:[
+      "Calculer A'B', la longueur du mur sur la maquette.",
+      "Calculer l'aire du sol sur la maquette.",
+      "Calculer le volume de l'image réduite de l'armoire sur la maquette, en litres. (Rappel : une homothétie de rapport k multiplie les volumes par k³ ; 1 m³ = 1 000 L)",
+      "Calculer la distance OC', où C' est l'image du coin C sur la maquette."
+    ],
+    correction:[
+      {q:"Question 1", r:`A'B' = k×AB = (1/4)×8 = <strong>2 m</strong>.`},
+      {q:"Question 2", r:`Une homothétie de rapport k multiplie les aires par k² : aire' = 24×(1/4)² = 24×(1/16) = <strong>1,5 m²</strong>.`},
+      {q:"Question 3", r:`volume' = 1,6×(1/4)³ = 1,6×(1/64) = 0,025 m³ = <strong>25 L</strong>.`},
+      {q:"Question 4", r:`OC' = k×OC = (1/4)×5 = <strong>1,25 m</strong>.`}
+    ]
+  },
+  {
+    theme:"Nombres — puissances & racines", pts:3,
+    context:`Une clé USB peut stocker 2×10¹¹ octets. Une photo numérique pèse en moyenne 5×10⁶ octets. Un serveur d'entreprise dispose, quant à lui, d'une capacité de stockage de 3,2×10¹⁴ octets.`,
+    questions:[
+      "Écrire 2×10¹¹ en écriture décimale.",
+      "Calculer, en écriture scientifique, le nombre maximal de photos que peut contenir la clé USB.",
+      "Combien de clés USB de 2×10¹¹ octets seraient nécessaires pour stocker la même quantité de données que le serveur ?",
+      `Calculer (4×10⁴)×(2,5×10⁻²) et donner le résultat en écriture scientifique.`
+    ],
+    correction:[
+      {q:"Question 1", r:`2×10¹¹ = <strong>200 000 000 000</strong>.`},
+      {q:"Question 2", r:`${frac('2×10¹¹','5×10⁶')} = ${frac(2,5)}×10^(11−6) = 0,4×10⁵ = <strong>4×10⁴</strong> photos (soit 40 000 photos).`},
+      {q:"Question 3", r:`${frac('3,2×10¹⁴','2×10¹¹')} = ${frac(3.2,2)}×10^(14−11) = 1,6×10³ = <strong>1 600 clés</strong>.`},
+      {q:"Question 4", r:`(4×10⁴)×(2,5×10⁻²) = (4×2,5)×10^(4−2) = 10×10² = <strong>10³</strong>.`}
+    ]
+  }
 ]
 
 ]; // fin SUJETS
@@ -1390,9 +1873,12 @@ const THEMES=[
   "Fonctions",
   "Géométrie — Pythagore & trigo",
   "Thalès",
+  "Transformations du plan",
   "Proportionnalité & pourcentages",
   "Grandeurs & mesures",
-  "Nombres — puissances & racines"
+  "Nombres — puissances & racines",
+  "Arithmétique — PGCD & divisibilité",
+  "Algorithmique & programmation"
 ];
 
 // ═══════════════════════════════════════════════════
@@ -1438,7 +1924,8 @@ function startSession(){
     // Entraînement : collecter tous les exos du thème choisi
     let pool=[];
     SUJETS.forEach(s=>s.forEach(e=>{
-      if(selectedTheme==='Tous les thèmes'||e.theme.toLowerCase().includes(selectedTheme.split('—')[0].trim().toLowerCase())||selectedTheme.toLowerCase().includes(e.theme.split('—')[0].trim().toLowerCase())){
+      const matchesTheme=t=>t.toLowerCase().includes(selectedTheme.split('—')[0].trim().toLowerCase())||selectedTheme.toLowerCase().includes(t.split('—')[0].trim().toLowerCase());
+      if(selectedTheme==='Tous les thèmes'||matchesTheme(e.theme)||(e.tags&&e.tags.some(matchesTheme))){
         pool.push(e);
       }
     }));
